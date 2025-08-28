@@ -1,0 +1,939 @@
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    margin: 0;
+    padding: 20px;
+    background-color: #eef1f5;
+    color: #333;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start; 
+    min-height: 100vh;
+}
+
+.container {
+    background-color: #fff;
+    border-radius: 10px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    padding: 30px;
+    max-width: 1200px;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+}
+
+h1 {
+    text-align: center;
+    color: #2c3e50;
+    margin-bottom: 30px;
+}
+
+h2, h3 {
+    color: #34495e;
+    border-bottom: 2px solid #ecf0f1;
+    padding-bottom: 10px;
+    margin-bottom: 20px;
+}
+/*Style logo*/
+
+.header-logo {
+    text-align: center;
+    margin-top: 10px;
+    margin-bottom: 20px;
+}
+
+.header-logo img {
+    height: 150px; 
+    max-width: 100%;
+    object-fit: contain;
+}
+
+/* --- Table Selection --- */
+table-selection-section {
+    background-color: #f8f9fa;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.05);
+    margin-bottom: 30px; 
+}
+
+.table-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); 
+    gap: 15px;
+    margin-bottom: 15px;
+}
+
+.table-item { 
+    padding: 20px 10px; 
+    background-color: #e0e0e0;
+    border: 1px solid #ccc;
+    border-radius: 8px; 
+    cursor: pointer;
+    font-weight: bold;
+    font-size: 1.1em;
+    transition: all 0.2s ease;
+    text-align: center;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05); 
+    display: flex; 
+    align-items: center;
+    justify-content: center;
+    flex-direction: column; 
+}
+
+.table-item:hover {
+    background-color: #d0d0d0;
+    transform: translateY(-2px); 
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.table-item.selected {
+    background-color: #007bff;
+    color: white;
+    border-color: #0056b3;
+    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.3); 
+    transform: scale(1.02); 
+}
+
+.table-item.occupied {
+    background-color: #ff9800; 
+    color: white; 
+    border-color: #e68900;
+}
+
+.table-item.occupied.selected {
+    background-color: #e68900; 
+    color: white;
+}
+
+.table-item.ready-to-bill {
+    background-color: #4CAF50; 
+    color: white;
+    border-color: #388E3C;
+}
+
+.table-item.ready-to-bill.selected {
+    background-color: #388E3C; 
+    color: white;
+}
+
+
+#selectedTableInfo {
+    font-style: italic;
+    color: #555;
+    text-align: center;
+    font-size: 1.1em;
+    margin-top: 10px;
+}
+
+/* --- Phần đơn hàng --- */
+.main-order-section {
+    display: flex;
+    gap: 30px;
+    flex-wrap: wrap; 
+}
+
+.menu-section {
+    flex: 2; 
+    min-width: 400px; 
+    background-color: #f8f9fa;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.order-bill-section {
+    flex: 1; 
+    min-width: 300px; 
+    background-color: #f8f9fa;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+/* --- Menu Items --- */
+.menu-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 15px;
+}
+
+.menu-item {
+    background-color: #fff;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 15px;
+    text-align: center;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    cursor: pointer;
+}
+
+
+.menu-item:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.15);
+}
+
+.menu-item h4 {
+    margin-top: 0;
+    margin-bottom: 5px;
+    color: #4a69bd;
+    text-align: center;
+    min-height: 50px; 
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+}
+
+
+
+.menu-item p {
+    color: #007bff;
+    font-weight: bold;
+    font-size: 1.1em;
+    margin-bottom: 15px;
+}
+
+.menu-item button.add-to-order-btn {
+    background-color: #28a745;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    padding: 10px 15px;
+    cursor: pointer;
+    font-size: 0.9em;
+    transition: background-color 0.2s ease;
+    width: 90%; 
+    align-self: center; 
+}
+
+.menu-item button.add-to-order-btn:hover {
+    background-color: #218838;
+}
+
+/* --- Order Summary & Bill --- */
+.order-summary ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.order-summary li {
+    margin-bottom: 8px;
+}
+
+.order-summary li:last-child {
+    border-bottom: none;
+}
+
+.order-item-info {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+    overflow: hidden;
+}
+
+.order-item-info span {
+    font-weight: bold;
+    color: #007bff;
+}
+
+.quantity-control {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.quantity-control button {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 3px;
+    width: 25px;
+    height: 25px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    font-size: 1.1em;
+}
+.quantity-control button:hover {
+    background-color: #0056b3;
+}
+
+.quantity-control span {
+    min-width: 20px;
+    text-align: center;
+    font-weight: bold;
+}
+
+/* Style cho nút xóa item khỏi order */
+.remove-item-btn {
+    background-color: #dc3545;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    padding: 4px 8px;
+    font-size: 14px;
+    font-weight: bold;
+    cursor: pointer;
+    margin-left: 10px;
+    transition: background-color 0.2s ease;
+}
+
+.remove-item-btn:hover {
+    background-color: #c82333;
+}
+
+.remove-item-btn:active {
+    background-color: #bd2130; 
+    transform: scale(0.95); 
+}
+
+
+.total-amount {
+    text-align: right;
+    font-size: 1.3em;
+    font-weight: bold;
+    color: #2c3e50;
+    margin-top: 15px;
+    padding-top: 10px;
+    border-top: 1px dashed #ddd;
+}
+
+.order-summary button,
+.bill-details button {
+    width: 100%;
+    padding: 12px;
+    margin-top: 10px;
+    font-size: 1.1em;
+    border-radius: 5px;
+    transition: background-color 0.2s ease;
+}
+
+.order-summary button#checkoutBtn {
+    background-color: #007bff;
+    color: white;
+}
+.order-summary button#checkoutBtn:hover:not(:disabled) {
+    background-color: #0056b3;
+}
+
+.order-summary button.cancel-btn {
+    background-color: #6c757d;
+}
+.order-summary button.cancel-btn:hover:not(:disabled) {
+    background-color: #5a6268;
+}
+
+.bill-details {
+    margin-top: 25px;
+    padding-top: 20px;
+    border-top: 1px solid #e0e0e0;
+}
+
+.bill-details p {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 8px;
+    font-size: 1.1em;
+}
+
+.bill-details p span {
+    font-weight: bold;
+    color: #007bff;
+}
+
+.bill-details input[type="number"] {
+    width: 70px;
+    padding: 5px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    text-align: right;
+}
+
+.bill-details .final-total {
+    font-size: 1.5em;
+    font-weight: bolder;
+    color: #28a745;
+    margin-top: 15px;
+    padding-top: 10px;
+    border-top: 1px dashed #ddd;
+}
+
+.bill-details button#confirmPaymentBtn {
+    background-color: #28a745;
+    color: white;
+}
+.bill-details button#confirmPaymentBtn:hover:not(:disabled) {
+    background-color: #218838;
+}
+
+
+button:disabled {
+    background-color: #cccccc;
+    cursor: not-allowed;
+    opacity: 0.7;
+}
+
+.empty-order-message {
+    text-align: center;
+    color: #888;
+    padding: 20px;
+    font-style: italic;
+}
+
+
+@media (max-width: 768px) {
+    .main-order-section {
+        flex-direction: column;
+    }
+    .menu-section, .order-bill-section {
+        min-width: unset;
+        width: 100%;
+    }
+}
+
+.menu-item img.dish-image { 
+    width: 100%;
+    height: 120px;
+    object-fit: cover; 
+    border-radius: 5px; 
+    margin-bottom: 10px;
+}
+
+/* Container cho các nút điều hướng */
+.top-right-nav {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    z-index: 1000; 
+    display: flex;
+    flex-direction: column; 
+    gap: 40px; 
+}
+
+.staff-manage-btn, .nav-button { 
+    display: inline-block;
+    padding: 10px 20px;
+    background-color: #007bff; 
+    color: white;
+    border: none;
+    border-radius: 5px;
+    text-decoration: none;
+    text-align: center;
+    font-weight: bold;
+    transition: background-color 0.3s ease;
+    white-space: nowrap; 
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.staff-manage-btn:hover, .nav-button:hover {
+    background-color: #0056b3;
+}
+
+/*nút Báo cáo Doanh thu */
+.revenue-button {
+    background-color: #17a2b8; 
+}
+
+.revenue-button:hover {
+    background-color: #138496;
+}
+/* Nút thêm món*/
+.add-dish-button {
+    background-color: #ff0000; 
+}
+
+.add-dish-button:hover {
+    background-color: #ff1515;
+}
+
+.top-right-nav {
+    position: absolute;
+    top: 10px; 
+    right: 10px; 
+}
+
+/* nút Kho */
+
+.ingredients-button {
+    background-color: #8e44ad;
+}
+.ingredients-button:hover {
+    background-color: #732d91;
+}
+
+/* nút đăng xuất */
+
+.logout-button {
+    background-color: #ff0000;
+}
+.logout-button:hover {
+    background-color: #ed5924;
+}
+
+
+
+/* nút xóa lịch sử doanh thu */
+
+.delete-history-btn {
+    display: block;
+    margin: 30px auto 0;
+    padding: 12px 25px;
+    background-color: #dc3545; 
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 1.1em;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.delete-history-btn:hover {
+    background-color: #c82333; 
+    transform: translateY(-2px); 
+}
+
+.delete-history-btn:active {
+    transform: translateY(0);
+}
+
+/*Style nút xóa món*/
+
+.delete-dish-button {
+    background-color: #47ff3e; 
+}
+.delete-dish-button:hover {
+    background-color: #3c9b00;
+}
+
+/*Style popup xóa món*/
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0,0,0,0.4);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+}
+
+.modal-content {
+  background-color: #fff;
+  padding: 25px;
+  border-radius: 10px;
+  max-height: 80vh;
+  overflow-y: auto;
+  width: 400px;
+  text-align: center;
+  box-shadow: 0 0 10px rgba(0,0,0,0.3);
+}
+
+.dish-delete-list {
+  list-style: none;
+  padding: 0;
+  margin: 15px 0;
+}
+
+.dish-delete-list li {
+  margin: 8px 0;
+  padding: 10px;
+  background-color: #f1f1f1;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.dish-delete-list li:hover {
+  background-color: #ffc9c9;
+}
+
+.modal-close-btn {
+  margin-top: 10px;
+  background-color: #dc3545;
+  color: white;
+  border: none;
+  padding: 8px 15px;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+
+.remove-item-btn {
+    background-color: #dc3545; 
+    color: white;
+    border: none;
+    border-radius: 50%; 
+    width: 10px; 
+    height: 20px; 
+    font-size: 0.8em; 
+    cursor: pointer;
+    display: flex; 
+    justify-content: center;
+    align-items: center;
+    flex-shrink: 0; 
+    margin-left: 10px; 
+    padding: 0; 
+    line-height: 1; 
+}
+
+.remove-item-btn:hover {
+    background-color: #c82333;
+}
+
+
+.order-item .item-name {
+    flex-grow: 1; 
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    margin-right: 5px; 
+}
+
+@media print {
+    body * {
+        visibility: hidden;
+    }
+    #invoiceModal, #invoiceModal * {
+        visibility: visible;
+    }
+    #invoiceModal {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        background: white;
+        padding: 20px;
+    }
+}
+
+#invoiceDetails {
+    font-family: 'Courier New', monospace;
+    font-size: 14px;
+    color: #000;
+    line-height: 1.6;
+}
+
+.invoice-wrapper {
+    font-family: 'Segoe UI', Tahoma, sans-serif;
+    max-width: 500px;
+    margin: 0 auto;
+    padding: 20px;
+    color: #333;
+  }
+  
+  .invoice-title {
+    text-align: center;
+    margin-bottom: 20px;
+    color: #2c3e50;
+  }
+  
+  .invoice-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 15px;
+  }
+  
+  .invoice-table th,
+  .invoice-table td {
+    border: 1px solid #ccc;
+    padding: 8px;
+    text-align: left;
+  }
+  
+  .invoice-table th {
+    background-color: #f8f8f8;
+  }
+
+/*nút chỉnh giá bán*/
+  .yellow-button {
+    background-color: #ffc107; 
+    color: #212529; 
+}
+
+.yellow-button:hover {
+    background-color: #e0a800;
+}
+
+/*nút lưu trong chỉnh giá bán*/
+.save-price-btn {
+    background-color: #28a745; 
+    color: white;
+    border: none;
+    border-radius: 5px;
+    padding: 7px 14px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.save-price-btn:hover {
+    background-color: #218838;
+}
+
+
+/* biểu đồ doanh thu */
+.revenue-chart-section {
+    margin-top: 40px;
+    background: #fff;
+    border: 1px solid #eee;
+    border-radius: 10px;
+    padding: 20px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+}
+
+/* MOBILE RESPONSIVE - thiết bị dưới 768px */
+@media (max-width: 768px) {
+    body {
+        padding: 10px;
+    }
+
+    .top-toolbar {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .top-toolbar a {
+        width: 100%;
+        font-size: 1em;
+        padding: 12px;
+    }
+
+    .main-container {
+        padding: 0 10px;
+    }
+
+    .table-grid {
+        grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+    }
+
+    .menu-grid {
+        grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+    }
+
+    .main-order-section {
+        flex-direction: column;
+    }
+
+    .menu-section,
+    .order-bill-section {
+        width: 100%;
+        margin-bottom: 20px;
+    }
+
+    .order-summary button,
+    .bill-details button {
+        width: 100%;
+        margin-top: 10px;
+    }
+
+    .bill-details input[type=\"number\"] {
+        width: 60px;
+    }
+
+    .modal-content {
+        width: 90%;
+        max-height: 90vh;
+        overflow-y: auto;
+    }
+}
+
+/* --- Hamburger Menu Styling --- */
+
+.hamburger-menu {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    z-index: 1001; /* Đảm bảo menu nằm trên các thành phần khác */
+}
+
+.hamburger-btn {
+    width: 40px;
+    height: 35px;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    padding: 0;
+}
+
+.hamburger-btn span {
+    display: block;
+    width: 100%;
+    height: 4px;
+    background-color: #333;
+    border-radius: 2px;
+    transition: all 0.3s ease-in-out;
+}
+
+/* Animation cho nút hamburger thành dấu 'X' */
+.hamburger-menu.open .hamburger-btn span:nth-child(1) {
+    transform: translateY(11px) rotate(45deg);
+}
+.hamburger-menu.open .hamburger-btn span:nth-child(2) {
+    opacity: 0;
+}
+.hamburger-menu.open .hamburger-btn span:nth-child(3) {
+    transform: translateY(-11px) rotate(-45deg);
+}
+
+.nav-links {
+    display: none; /* Ẩn menu theo mặc định */
+    position: absolute;
+    top: 50px;
+    right: 0;
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    overflow: hidden;
+    min-width: 250px;
+}
+
+.hamburger-menu.open .nav-links {
+    display: block; /* Hiện menu khi có class 'open' */
+}
+
+.nav-links a.nav-button {
+    display: block;
+    width: 100%;
+    padding: 12px 20px;
+    text-align: left;
+    border-radius: 0;
+    box-shadow: none;
+    margin: 0;
+    border-bottom: 1px solid #f0f0f0;
+    color: #333; /* Đổi màu chữ cho dễ đọc */
+    background-color: white; /* Nền trắng mặc định */
+    transition: background-color 0.2s ease;
+}
+
+.nav-links a.nav-button:last-child {
+    border-bottom: none;
+}
+
+.nav-links a.nav-button:hover {
+    background-color: #f5f5f5; /* Hiệu ứng khi di chuột qua */
+}
+
+/* Giữ lại màu cho nút đăng xuất để nổi bật */
+.nav-links a.logout-button {
+    color: white;
+    background-color: #dc3545;
+}
+.nav-links a.logout-button:hover {
+    background-color: #c82333;
+}
+
+/* Giao diện chung cho bảng */
+#shiftsTable {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+/* Kiểu dáng tiêu đề bảng */
+#shiftsTable thead {
+    background-color: #007bff;
+    color: white;
+}
+
+#shiftsTable th {
+    padding: 12px 15px;
+    text-align: left;
+    font-weight: bold;
+    border: 1px solid #dee2e6;
+}
+
+/* Kiểu dáng các hàng dữ liệu */
+#shiftsTable tbody tr {
+    border-bottom: 1px solid #dee2e6;
+    transition: background-color 0.3s ease;
+}
+
+#shiftsTable tbody tr:nth-child(even) {
+    background-color: #f8f9fa;
+}
+
+#shiftsTable tbody tr:hover {
+    background-color: #e2f2ff;
+}
+
+#shiftsTable td {
+    padding: 12px 15px;
+    border: 1px solid #dee2e6;
+}
+
+/* style cho các cột quản lý ca làm */
+#shiftsTable td:nth-child(3) {
+    text-align: right;
+    font-weight: bold;
+    color: #ff0000;
+}
+#shiftsTable td:nth-child(4) {
+    text-align: right;
+    font-weight: bold;
+    color: #ff0000;
+}
+
+#shiftsTable td:nth-child(5) {
+    text-align: right;
+    font-weight: bold;
+    color: #28a745;
+}
+
+
+/* Style các nút và form lọc */
+.filter-container {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 20px;
+    padding: 15px;
+    background-color: #f1f5f9;
+    border-radius: 8px;
+}
+
+.filter-container label {
+    font-weight: 600;
+    color: #555;
+}
+
+.filter-container input[type="date"] {
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 1em;
+}
+
+.filter-container button {
+    padding: 8px 15px;
+    border: none;
+    border-radius: 4px;
+    color: white;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+#filterBtn {
+    background-color: #007bff;
+}
+
+#resetFilterBtn {
+    background-color: #6c757d;
+}

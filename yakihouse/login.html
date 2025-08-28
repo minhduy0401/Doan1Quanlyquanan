@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Đăng Nhập</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background-color: #eef1f5;
+        }
+        .login-container {
+            background-color: #fff;
+            padding: 40px;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            width: 350px;
+            text-align: center;
+        }
+        .login-container h1 {
+            color: #2c3e50;
+            margin-bottom: 30px;
+        }
+        .login-container input[type="text"],
+        .login-container input[type="password"] {
+            width: calc(100% - 22px);
+            padding: 12px;
+            margin-bottom: 20px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 1em;
+        }
+        .login-container button {
+            width: 100%;
+            padding: 12px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 1.1em;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        .login-container button:hover {
+            background-color: #0056b3;
+        }
+        .error-message {
+            color: red;
+            margin-top: -10px;
+            margin-bottom: 20px;
+            font-size: 0.9em;
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <div class="header-logo">
+            <img src="image/logo.png" alt="Logo" />
+        </div>
+        <h1>Đăng Nhập</h1>
+        <input type="text" id="username" placeholder="Mã nhân viên">
+        <input type="password" id="password" placeholder="Mật khẩu">
+        <button id="loginBtn">Đăng Nhập</button>
+        <p id="errorMessage" class="error-message"></p>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const codeInput = document.getElementById('username');
+            const passwordInput = document.getElementById('password');
+            const loginBtn = document.getElementById('loginBtn');
+            const errorMessage = document.getElementById('errorMessage');
+
+            // Kiểm tra xem các phần tử có tồn tại không trước khi thêm event listener
+            if (!codeInput || !passwordInput || !loginBtn || !errorMessage) {
+                console.error('Lỗi: Không tìm thấy một hoặc nhiều phần tử DOM cần thiết trong login.html.');
+                if (errorMessage) {
+                    errorMessage.textContent = 'Lỗi tải trang: Không tìm thấy các thành phần đăng nhập.';
+                }
+                return; 
+            }
+
+            const urlParams = new URLSearchParams(window.location.search);
+            const redirectTo = urlParams.get('redirect');
+
+            // Hàm xử lý đăng nhập
+            async function handleLogin() {
+                const code = codeInput.value.trim();
+                const password = passwordInput.value.trim();
+
+                if (!code || !password) {
+                    errorMessage.textContent = 'Vui lòng nhập đầy đủ mã nhân viên và mật khẩu!';
+                    return;
+                }
+
+                try {
+                    const response = await fetch('api/auth.php', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({ code, password })
+                    });
+                    const data = await response.json();
+
+                    if (data.success) {
+                        sessionStorage.setItem('isLoggedIn', 'true');
+                        sessionStorage.setItem('role', data.user.role);
+                        sessionStorage.setItem('staffName', data.user.name);
+                        sessionStorage.setItem('staffId', data.user.id); 
+
+                        let targetPage = 'index.html';
+                        if (redirectTo === 'revenue') targetPage = 'revenue.html';
+                        else if (redirectTo === 'staff') targetPage = 'staff.html';
+                        else if (redirectTo === 'add_dish') targetPage = 'add_dish.html';
+
+                        window.location.href = targetPage;
+                    } else {
+                        errorMessage.textContent = data.message;
+                    }
+                } catch (error) {
+                    console.error('Lỗi đăng nhập:', error);
+                    errorMessage.textContent = 'Đã xảy ra lỗi khi đăng nhập. Vui lòng thử lại.';
+                }
+            }
+
+            loginBtn.addEventListener('click', handleLogin);
+
+            passwordInput.addEventListener('keydown', (event) => {
+                if (event.key === 'Enter') {
+                    event.preventDefault();
+                    handleLogin();
+                }
+            });
+
+            codeInput.addEventListener('keydown', (event) => {
+                if (event.key === 'Enter') {
+                    event.preventDefault();
+                    handleLogin();
+                }
+            });
+        });
+    </script>
+</body>
+</html>

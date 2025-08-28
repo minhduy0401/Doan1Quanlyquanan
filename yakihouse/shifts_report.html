@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Báo Cáo Ca Làm Việc</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <div class="header-logo">
+            <img src="image/logo.png" alt="Logo" />
+        </div>
+        <h1>Quản lý ca làm việc</h1>
+
+        <div class="report-controls">
+            <label for="startDate">Từ ngày:</label>
+            <input type="date" id="startDate">
+            <label for="endDate">Đến ngày:</label>
+            <input type="date" id="endDate">
+            <button id="filterBtn">Lọc</button>
+        </div>
+
+        <div class="report-table-container">
+            <table id="shiftsTable">
+                <thead>
+                    <tr>
+                        <th>Tên Nhân Viên</th>
+                        <th>Mã Nhân Viên</th>
+                        <th>Giờ Check-in</th>
+                        <th>Giờ Check-out</th>
+                        <th>Doanh thu</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    </tbody>
+            </table>
+            <p id="message" style="text-align: center; margin-top: 20px;"></p>
+        </div>
+        <br>
+        <a href="index.html" style="display: block; text-align: center; margin-top: 20px; color: #007bff; text-decoration: none;">Quay lại trang chính</a>
+    </div>
+    <script src="shifts_report.js"></script>
+</body>
+</html>

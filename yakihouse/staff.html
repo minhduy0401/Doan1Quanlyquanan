@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quản Lý Nhân Viên</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .staff-management-section {
+            margin-top: 30px;
+        }
+        .staff-form {
+            background-color: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            box-shadow: inset 0 1px 3px rgba(0,0,0,0.05);
+        }
+        .staff-form input[type="text"],
+        .staff-form input[type="password"],
+        .staff-form select {
+            width: calc(100% - 22px);
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        .staff-form button {
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        .staff-form button:hover {
+            background-color: #0056b3;
+        }
+        .staff-list ul {
+            list-style: none;
+            padding: 0;
+        }
+        .staff-list li {
+            background-color: #fdfdfd;
+            border: 1px solid #e0e0e0;
+            border-radius: 5px;
+            padding: 10px 15px;
+            margin-bottom: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.95em;
+        }
+        .staff-list li:nth-child(odd) {
+            background-color: #f9f9f9;
+        }
+        .staff-list li strong {
+            color: #333;
+        }
+        .staff-actions button {
+            margin-left: 10px;
+            padding: 5px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        .staff-actions .edit-btn {
+            background-color: #ffc107;
+            color: #333;
+            border: none;
+        }
+        .staff-actions .edit-btn:hover {
+            background-color: #e0a800;
+        }
+        .staff-actions .delete-btn {
+            background-color: #dc3545;
+            color: white;
+            border: none;
+        }
+        .staff-actions .delete-btn:hover {
+            background-color: #c82333;
+        }
+        .empty-staff-message {
+            text-align: center;
+            color: #888;
+            padding: 20px;
+            font-style: italic;
+        }
+    </style>
+</head>
+<body>
+    <!-- Kiểm tra quyền truy cập -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const role = sessionStorage.getItem('role');
+            if (role !== 'Quản lý') {
+                document.body.innerHTML = '<p style="text-align:center; margin-top: 50px; font-size: 20px; color: red;">Bạn không có quyền truy cập trang này.</p>';
+            }
+        });
+    </script>
+    <div class="container">
+        <div class="header-logo">
+            <img src="image/logo.png" alt="Logo" />
+        </div>
+        <h1>Quản Lý Nhân Viên</h1>
+        <div class="staff-management-section">
+            <h2>Thêm/Sửa Nhân Viên</h2>
+            <div class="staff-form">
+                <input type="hidden" id="staffId" value="">
+                <input type="text" id="staffName" placeholder="Họ tên nhân viên" required>
+                <input type="text" id="staffCode" placeholder="Mã nhân viên" required>
+                <input type="password" id="staffPassword" placeholder="Mật khẩu" required>
+                <input type="text" id="staffPhone" placeholder="Số điện thoại" required>
+                <select id="staffPosition">
+                    <option value="">Chọn chức vụ</option>
+                    <option value="Quản lý">Quản lý</option>
+                    <option value="Thu ngân">Thu ngân</option>
+                    <option value="Phục vụ">Phục vụ</option>
+                    <option value="Bếp trưởng">Bếp trưởng</option>
+                    <option value="Đầu bếp">Đầu bếp</option>
+                </select>
+                <button id="saveStaffBtn">Lưu Nhân Viên</button>
+                <button id="clearStaffFormBtn" style="background-color: #6c757d;">Xóa Form</button>
+            </div>
+
+            <h2>Danh Sách Nhân Viên</h2>
+            <div class="staff-list">
+                <ul id="staffList">
+                    <li class="empty-staff-message">Chưa có nhân viên nào.</li>
+                </ul>
+            </div>
+        </div>
+        <br>
+        <a href="index.html" style="display: block; text-align: center; margin-top: 20px; color: #007bff; text-decoration: none;">Quay lại trang chính</a>
+    </div>
+    <!-- Script xử lý logic nhân viên -->
+    <script src="staff-script.js"></script>
+</body>
+</html>

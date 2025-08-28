@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Báo Cáo Doanh Thu</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .revenue-container {
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            max-width: 800px;
+            width: 100%;
+            margin: 30px auto;
+        }
+        .revenue-container h1 {
+            text-align: center;
+            color: #2c3e50;
+            margin-bottom: 30px;
+        }
+        .revenue-section {
+            margin-bottom: 25px;
+            border: 1px solid #eee;
+            border-radius: 8px;
+            padding: 20px;
+            background-color: #fcfcfc;
+        }
+        .revenue-section h2 {
+            color: #34495e;
+            margin-top: 0;
+            border-bottom: 1px solid #e0e0e0;
+            padding-bottom: 10px;
+            margin-bottom: 15px;
+        }
+        .filter-controls {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+        .filter-controls input, .filter-controls button {
+            padding: 8px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+        }
+        .filter-controls button {
+            cursor: pointer;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            transition: background-color 0.3s ease;
+        }
+        .filter-controls button:hover {
+            background-color: #0056b3;
+        }
+        .delete-history-btn {
+            background-color: #dc3545;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 20px;
+            display: block;
+            width: 100%;
+            text-align: center;
+        }
+        .delete-history-btn:hover {
+            background-color: #c82333;
+        }
+        .total-revenue-value {
+            font-size: 1.5em;
+            color: #28a745;
+        }
+        .transaction-list {
+            margin-top: 25px;
+        }
+        .transaction-list ul {
+            list-style-type: none;
+            padding: 0;
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        .transaction-list li {
+            padding: 10px;
+            border-bottom: 1px solid #eee;
+        }
+        .transaction-list li:last-child {
+            border-bottom: none;
+        }
+        .empty-message {
+            color: #6c757d;
+            text-align: center;
+            padding: 20px;
+        }
+        canvas {
+            background: #fff;
+            padding: 10px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        }
+    </style>
+</head>
+<body>
+    <div class="revenue-container">
+        <h1>Báo Cáo Doanh Thu</h1>
+        <div class="header-logo">
+            <img src="image/logo.png" alt="Logo" />
+        </div>
+        <div class="revenue-section">
+            <h2>Doanh Thu Theo Thời Gian</h2>
+            <p>Doanh thu Ngày: <strong id="dailyRevenue">0 VND</strong></p>
+            <p>Doanh thu Tuần: <strong id="weeklyRevenue">0 VND</strong></p>
+            <p>Doanh thu Tháng: <strong id="monthlyRevenue">0 VND</strong></p>
+            <p>Doanh thu Năm: <strong id="yearlyRevenue">0 VND</strong></p>
+            <p>Tổng Doanh thu (Theo lọc): <strong id="totalFilteredRevenue" class="total-revenue-value">0 VND</strong></p>
+        </div>
+        
+        <div class="revenue-section">
+            <h2>Biểu Đồ Doanh Thu</h2>
+            <canvas id="revenueChart"></canvas>
+        </div>
+
+        <div class="filter-controls">
+            <label for="startDate">Từ ngày:</label>
+            <input type="date" id="startDate">
+            <label for="endDate">Đến ngày:</label>
+            <input type="date" id="endDate">
+            <button id="filterRevenueBtn">Lọc Doanh Thu</button>
+            <button id="resetFilterBtn" style="background-color: #6c757d;">Đặt Lại</button>
+        </div>
+
+        <div class="transaction-list">
+            <h2>Lịch Sử Giao Dịch</h2>
+            <ul id="transactionList">
+                <li class="empty-message">Chưa có giao dịch nào được ghi nhận.</li>
+            </ul>
+        </div>
+        <button id="deleteHistoryBtn" class="delete-history-btn">Xóa Lịch Sử Doanh Thu</button>
+        <br>
+        <a href="index.html" style="display: block; text-align: center; margin-top: 20px;">Quay lại trang chính</a>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="revenue-script.js"></script>
+</body>
+</html>
