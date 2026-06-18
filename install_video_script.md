@@ -27,7 +27,7 @@
 | 1 | Python, Git, XAMPP (MySQL) | Sẽ cài **trong video** |
 | 2 | Folder project TEXTQAI | Sẽ **clone mới** trong video |
 | 3 | `instance/bootstrap.json` | Tạo **trong video** bằng `setup_bootstrap.py` |
-| 4 | Database `luanvan_ai` | Tạo **trong video** bằng `init_mysql.sql` (phpMyAdmin hoặc lệnh) |
+| 4 | Database `textqai` | Tạo **trong video** bằng `init_mysql.sql` (phpMyAdmin hoặc lệnh) |
 
 Chỉ cần sẵn: trình duyệt, kết nối mạng, Cursor/VS Code (có thể cài nhanh 1 phút đầu).
 
@@ -85,7 +85,7 @@ Chỉ cần sẵn: trình duyệt, kết nối mạng, Cursor/VS Code (có thể
 | 6:00–8:00 | apachefriends.org → tải XAMPP Windows | *"Bước 3: cài XAMPP — tải bản Windows, Next liên tục, cài vào C:\\xampp mặc định."* |
 | 8:00–8:45 | XAMPP Control Panel → Start **MySQL** | *"Mở XAMPP Control Panel, bấm Start ở dòng MySQL — chuyển sang màu xanh là MySQL đang chạy. Apache không bắt buộc cho TEXTQAI."* |
 | 8:45–9:30 | Mở `http://localhost/phpmyadmin` | *"Mở phpMyAdmin trên trình duyệt — đăng nhập user root, XAMPP mặc định thường không cần mật khẩu."* |
-| 9:30–10:00 | — | *"Phần tạo database luanvan_ai sẽ làm ở bước 6 — sau khi đã clone code, vì script nằm trong repo."* |
+| 9:30–10:00 | — | *"Phần tạo database textqai sẽ làm ở bước 6 — sau khi đã clone code, vì script nằm trong repo."* |
 
 **Note (15 giây):** *"Muốn dùng PostgreSQL thay MySQL — xem install_guide mục 4; video này dùng MySQL vì dễ hơn cho người mới."*
 
@@ -119,9 +119,9 @@ Chỉ cần sẵn: trình duyệt, kết nối mạng, Cursor/VS Code (có thể
 
 | Thời gian | Hình ảnh | Lời thoại | Lệnh / thao tác |
 |-----------|----------|-----------|-----------------|
-| 16:30–17:00 | Mở `database\init_mysql.sql` trong Cursor | *"Bước 6: file này tạo database luanvan_ai và user textqai_user. Có thể sửa mật khẩu your_password trong file trước khi chạy."* | — |
-| 17:00–18:30 | phpMyAdmin → tab SQL | *"Mở phpMyAdmin, chọn tab SQL, copy toàn bộ nội dung init_mysql.sql, bấm Go — thấy database luanvan_ai là xong."* | `http://localhost/phpmyadmin` → SQL → Execute |
-| 18:30–19:00 | Sidebar: database `luanvan_ai` | *"Kiểm tra bên trái đã có database luanvan_ai."* | — |
+| 16:30–17:00 | Mở `database\init_mysql.sql` trong Cursor | *"Bước 6: file này tạo database textqai và user textqai_user. Trong repo mặc định là luanvan_ai — đổi thành textqai (Find & Replace) và sửa mật khẩu your_password nếu cần."* | — |
+| 17:00–18:30 | phpMyAdmin → tab SQL | *"Mở phpMyAdmin, chọn tab SQL, copy toàn bộ nội dung init_mysql.sql, bấm Go — thấy database textqai là xong."* | `http://localhost/phpmyadmin` → SQL → Execute |
+| 18:30–19:00 | Sidebar: database `textqai` | *"Kiểm tra bên trái đã có database textqai."* | — |
 | 19:00–20:00 | (Tùy chọn) Lệnh XAMPP | *"Hoặc chạy lệnh — XAMPP root thường không mật khẩu, Enter khi hỏi password."* | `Get-Content database\init_mysql.sql \| & "C:\xampp\mysql\bin\mysql.exe" -u root` |
 
 **Lưu ý trên video:** MySQL trong XAMPP phải đang **Start** (màu xanh) trước khi làm bước này.
@@ -134,7 +134,7 @@ Chỉ cần sẵn: trình duyệt, kết nối mạng, Cursor/VS Code (có thể
 |-----------|----------|-----------|------|
 | 20:00–20:30 | Giải thích bootstrap | *"Bước 7: file instance/bootstrap.json — kết nối DB và secret key."* | — |
 | 20:30–21:00 | setup_bootstrap | *"Tạo file mẫu."* | `python setup_bootstrap.py` |
-| 21:00–22:30 | Sửa bootstrap.json | *"Sửa database_uri sang MySQL — dùng user textqai_user và mật khẩu đã đặt trong init_mysql.sql. XAMPP dev có thể dùng root không mật khẩu."* | `mysql+mysqlconnector://textqai_user:your_password@127.0.0.1:3306/luanvan_ai`<br>hoặc `mysql+mysqlconnector://root@127.0.0.1:3306/luanvan_ai` |
+| 21:00–22:30 | Sửa bootstrap.json | *"Sửa database_uri sang MySQL — dùng user textqai_user và mật khẩu đã đặt trong init_mysql.sql. XAMPP dev có thể dùng root không mật khẩu."* | `mysql+mysqlconnector://textqai_user:your_password@127.0.0.1:3306/textqai`<br>hoặc `mysql+mysqlconnector://root@127.0.0.1:3306/textqai` |
 | 22:30–23:00 | URL-encode note | *"Mật khẩu có @ # % phải encode URL."* | — |
 
 ---
@@ -189,10 +189,10 @@ Chỉ cần sẵn: trình duyệt, kết nối mạng, Cursor/VS Code (có thể
 | `python` không nhận lệnh | Chưa tick Add to PATH — cài lại Python |
 | `ModuleNotFoundError` | Chưa `venv\Scripts\activate` |
 | `could not connect to server` / `Can't connect to MySQL` | MySQL chưa chạy — bật Start trong XAMPP Control Panel |
-| `Table 'luanvan_ai.users' doesn't exist` | Chưa chạy `python init_db.py` |
+| `Table 'textqai.users' doesn't exist` | Chưa chạy `python init_db.py` |
 | `Access denied for user` | Sai user/mật khẩu trong `bootstrap.json` |
 | `No module named 'mysql'` | Chưa `pip install mysql-connector-python` |
-| `Unknown database 'luanvan_ai'` | Chưa chạy `init_mysql.sql` ở bước 6 |
+| `Unknown database 'textqai'` | Chưa chạy `init_mysql.sql` ở bước 6 |
 
 ---
 
