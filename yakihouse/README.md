@@ -1,14 +1,14 @@
-# 🍜 YakiHouse - Hệ Thống Quản Lý Nhà Hàng
+# 🍖 Quán Buffet BBQ - Hệ Thống Quản Lý Nhà Hàng
 
 <div align="center">
-  <img src="image/logo.png" alt="YakiHouse Logo" width="200"/>
+  <img src="image/logo.png" alt="Quán Buffet BBQ Logo" width="200"/>
   
-  ### Hệ thống quản lý nhà hàng BBQ Hàn Quốc toàn diện
+  ### Hệ thống quản lý nhà hàng Buffet BBQ toàn diện
   
   [![PHP](https://img.shields.io/badge/PHP-8.0-blue)](https://www.php.net/)
   [![MySQL](https://img.shields.io/badge/MySQL-10.4-orange)](https://www.mysql.com/)
   [![JavaScript](https://img.shields.io/badge/JavaScript-ES6+-yellow)](https://developer.mozilla.org/en-US/docs/Web/JavaScript)
-  [![License](https://img.shields.io/badge/License-Proprietary-red)]()
+  [![License](https://img.shields.io/badge/License-Personal-red)]()
 </div>
 
 ---
@@ -30,7 +30,7 @@
 
 ## 🎯 Giới Thiệu
 
-**YakiHouse** là hệ thống quản lý nhà hàng BBQ Hàn Quốc được phát triển với mục đích:
+**Quán Buffet BBQ** là hệ thống quản lý nhà hàng được phát triển với mục đích:
 
 - ✅ Quản lý gọi món và tính tiền nhanh chóng
 - ✅ Quản lý bàn ăn theo thời gian thực
@@ -518,28 +518,9 @@ Chúng tôi hoan nghênh mọi đóng góp! Để đóng góp:
 
 ## 📄 License
 
-Proprietary License - All Rights Reserved
+Dự án cá nhân - Bảo lưu mọi quyền
 
-Copyright (c) 2024 YakiHouse Team
-
----
-
-## 👥 Team
-
-- **Project Manager:** Nguyễn Văn A
-- **Backend Developer:** Trần Văn B
-- **Frontend Developer:** Lê Thị C
-- **Database Designer:** Phạm Văn D
-- **Tester:** Hoàng Thị E
-
----
-
-## 📞 Liên Hệ
-
-- **Email:** support@yakihouse.vn
-- **Hotline:** 0123 456 789
-- **Website:** https://yakihouse.vn
-- **Facebook:** fb.com/yakihouse
+Copyright (c) 2024 Nguyễn Minh Duy
 
 ---
 
@@ -555,7 +536,7 @@ Cảm ơn các công nghệ và thư viện mã nguồn mở:
 ---
 
 <div align="center">
-  Made with ❤️ by YakiHouse Team
-  
-  [⬆ Về đầu trang](#-yakihouse---hệ-thống-quản-lý-nhà-hàng)
+  Made with ❤️ by Nguyễn Minh Duy
+
+  [⬆ Về đầu trang](#-quán-buffet-bbq---hệ-thống-quản-lý-nhà-hàng)
 </div>
