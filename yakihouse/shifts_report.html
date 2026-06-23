@@ -1,45 +1,220 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Báo Cáo Ca Làm Việc</title>
+    <title>Quản Lý Ca Làm Việc - Quán Buffet BBQ</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div class="container">
-        <div class="header-logo">
-            <img src="image/logo.png" alt="Logo" />
-        </div>
-        <h1>Quản lý ca làm việc</h1>
+    <!-- Kiểm tra đăng nhập -->
+    <script>
+        const isLoggedIn = sessionStorage.getItem('isLoggedIn');
+        if (isLoggedIn !== 'true') {
+            alert('Bạn cần đăng nhập để sử dụng hệ thống!');
+            window.location.href = 'login.html?redirect=shifts_report';
+        }
+    </script>
 
-        <div class="report-controls">
-            <label for="startDate">Từ ngày:</label>
-            <input type="date" id="startDate">
-            <label for="endDate">Đến ngày:</label>
-            <input type="date" id="endDate">
-            <button id="filterBtn">Lọc</button>
+    <!-- SIDEBAR NAVIGATION -->
+    <aside class="sidebar">
+        <div class="sidebar-logo">
+            <img src="image/logo.png" alt="Quán Buffet BBQ Logo" />
+            <h3>Quán Buffet BBQ</h3>
         </div>
+        <ul class="sidebar-menu">
+            <li class="sidebar-menu-item">
+                <a href="dashboard.html" class="sidebar-menu-link">📊 Dashboard</a>
+            </li>
+            <li class="sidebar-menu-item">
+                <a href="index.html" class="sidebar-menu-link">📋 Gọi Món & Tính Bill</a>
+            </li>
+            <li class="sidebar-menu-item">
+                <a href="dishes.html" class="sidebar-menu-link">🍜 Quản Lý Món Ăn</a>
+            </li>
+            <li class="sidebar-menu-item">
+                <a href="staff.html" class="sidebar-menu-link">👥 Quản Lý Nhân Viên</a>
+            </li>
+            <li class="sidebar-menu-item">
+                <a href="ingredients.html" class="sidebar-menu-link">📦 Kho Nguyên Liệu</a>
+            </li>
+            <li class="sidebar-menu-item">
+                <a href="revenue.html" class="sidebar-menu-link">💰 Báo Cáo Doanh Thu</a>
+            </li>
+            <li class="sidebar-menu-item">
+                <a href="shifts_report.html" class="sidebar-menu-link active">⏰ Quản Lý Ca Làm</a>
+            </li>
+            <li class="sidebar-menu-item">
+                <a href="change_password.html" class="sidebar-menu-link">🔑 Đổi Mật Khẩu</a>
+            </li>
+            <li class="sidebar-menu-item">
+                <a href="#" id="logoutLink" class="sidebar-menu-link">🚪 Đăng Xuất</a>
+            </li>
+        </ul>
+    </aside>
 
-        <div class="report-table-container">
-            <table id="shiftsTable">
-                <thead>
-                    <tr>
-                        <th>Tên Nhân Viên</th>
-                        <th>Mã Nhân Viên</th>
-                        <th>Giờ Check-in</th>
-                        <th>Giờ Check-out</th>
-                        <th>Doanh thu</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    </tbody>
-            </table>
-            <p id="message" style="text-align: center; margin-top: 20px;"></p>
+    <!-- TOPBAR -->
+    <header class="topbar">
+        <div class="topbar-title">⏰ Quản Lý Ca Làm Việc</div>
+        <div class="topbar-user">
+            <div class="user-profile">
+                <div class="user-avatar" id="userAvatarTop">A</div>
+                <div class="user-info">
+                    <div class="user-name" id="userNameTop">Nhân viên</div>
+                    <div class="user-role" id="userRoleTop">Phục vụ</div>
+                </div>
+            </div>
         </div>
-        <br>
-        <a href="index.html" style="display: block; text-align: center; margin-top: 20px; color: #007bff; text-decoration: none;">Quay lại trang chính</a>
+    </header>
+
+    <!-- HAMBURGER MENU (Mobile) -->
+    <div id="hamburgerMenu" class="hamburger-menu">
+        <button id="hamburgerBtn" class="hamburger-btn">
+            <span></span>
+            <span></span>
+            <span></span>
+        </button>
+        <div id="navLinks" class="nav-links">
+            <a href="dashboard.html">📊 Dashboard</a>
+            <a href="index.html">📋 Gọi Món & Tính Bill</a>
+            <a href="dishes.html">🍜 Quản Lý Món Ăn</a>
+            <a href="staff.html">👥 Quản Lý Nhân Viên</a>
+            <a href="ingredients.html">📦 Kho Nguyên Liệu</a>
+            <a href="revenue.html">💰 Báo Cáo Doanh Thu</a>
+            <a href="shifts_report.html">⏰ Quản Lý Ca Làm</a>
+            <a href="change_password.html">🔑 Đổi Mật Khẩu</a>
+            <a href="#" id="mobileLogout">🚪 Đăng Xuất</a>
+        </div>
     </div>
+
+    <!-- MAIN CONTENT -->
+    <main class="main-content">
+        <div class="container">
+            <!-- TOOLBAR & STATS -->
+            <div class="flex-between mb-3">
+                <h1 style="margin: 0;">⏰ Báo Cáo Ca Làm Việc</h1>
+            </div>
+
+            <!-- STAT CARDS -->
+            <div class="card-stats mb-3">
+                <div class="stat-card info">
+                    <div class="stat-value" id="totalShifts">0</div>
+                    <div class="stat-label">Tổng Ca Làm</div>
+                </div>
+                <div class="stat-card success">
+                    <div class="stat-value" id="totalRevenue">0đ</div>
+                    <div class="stat-label">Tổng Doanh Thu</div>
+                </div>
+                <div class="stat-card warning">
+                    <div class="stat-value" id="avgRevenue">0đ</div>
+                    <div class="stat-label">TB/Ca</div>
+                </div>
+                <div class="stat-card primary">
+                    <div class="stat-value" id="activeStaffCount">0</div>
+                    <div class="stat-label">NV Đang Làm</div>
+                </div>
+            </div>
+
+            <!-- FILTER -->
+            <div class="card mb-3">
+                <h2>🔍 Lọc Báo Cáo</h2>
+                <div class="form-inline">
+                    <div class="form-group">
+                        <label for="startDate">Từ ngày:</label>
+                        <input type="date" id="startDate">
+                    </div>
+                    <div class="form-group">
+                        <label for="endDate">Đến ngày:</label>
+                        <input type="date" id="endDate">
+                    </div>
+                    <div class="form-group">
+                        <label>&nbsp;</label>
+                        <button id="filterBtn" class="btn btn-primary">🔍 Lọc</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TABLE -->
+            <div class="card">
+                <h2>📋 Danh Sách Ca Làm Việc</h2>
+                <div style="overflow-x: auto;">
+                    <table class="table" id="shiftsTable">
+                        <thead>
+                            <tr>
+                                <th>Tên Nhân Viên</th>
+                                <th>Mã NV</th>
+                                <th>Chức Vụ</th>
+                                <th>Check-in</th>
+                                <th>Check-out</th>
+                                <th>Giờ Làm</th>
+                                <th>Doanh Thu Ca</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td colspan="7" class="text-center">Đang tải...</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <p id="message" class="text-center mt-2" style="display: none;"></p>
+            </div>
+        </div>
+    </main>
+
+    <!-- SCRIPTS -->
     <script src="shifts_report.js"></script>
+    <script>
+        // Common UI Scripts
+        document.addEventListener('DOMContentLoaded', () => {
+            // Hamburger Menu
+            const hamburgerBtn = document.getElementById('hamburgerBtn');
+            const hamburgerMenu = document.getElementById('hamburgerMenu');
+
+            if (hamburgerBtn) {
+                hamburgerBtn.addEventListener('click', () => {
+                    hamburgerMenu.classList.toggle('open');
+                });
+            }
+
+            // Display user info
+            const staffName = sessionStorage.getItem('staffName') || 'Nhân viên';
+            const role = sessionStorage.getItem('role') || 'Phục vụ';
+            const userAvatar = staffName.charAt(0).toUpperCase();
+
+            document.getElementById('userNameTop').textContent = staffName;
+            document.getElementById('userRoleTop').textContent = role;
+            document.getElementById('userAvatarTop').textContent = userAvatar;
+
+            // Logout Handler
+            const logoutLink = document.getElementById('logoutLink');
+            const mobileLogout = document.getElementById('mobileLogout');
+
+            [logoutLink, mobileLogout].forEach(btn => {
+                if (btn) {
+                    btn.addEventListener('click', (e) => {
+                        e.preventDefault();
+                        if (confirm('Bạn có chắc chắn muốn đăng xuất?')) {
+                            sessionStorage.clear();
+                            window.location.href = 'login.html';
+                        }
+                    });
+                }
+            });
+
+            // Close mobile menu
+            const navLinks = document.querySelectorAll('.nav-links a');
+            navLinks.forEach(link => {
+                link.addEventListener('click', () => {
+                    hamburgerMenu.classList.remove('open');
+                });
+            });
+
+            // Set default dates (today)
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('startDate').value = today;
+            document.getElementById('endDate').value = today;
+        });
+    </script>
 </body>
 </html>

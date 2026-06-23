@@ -200,8 +200,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $orderID = $input['orderId'] ?? '';
         $finalAmount = $input['total'] ?? 0;
         $staffID = $input['staffId'] ?? '';
+        $paymentMethod = $input['paymentMethod'] ?? 'cash';
 
-        error_log("checkout params: TableID=" . $tableID . ", OrderID=" . $orderID . ", Total=" . $finalAmount . ", StaffID=" . $staffID);
+        error_log("checkout params: TableID=" . $tableID . ", OrderID=" . $orderID . ", Total=" . $finalAmount . ", StaffID=" . $staffID . ", PaymentMethod=" . $paymentMethod);
 
         if (empty($tableID) || empty($orderID) || $finalAmount <= 0 || empty($staffID)) {
             $response['message'] = 'Thiếu thông tin để thanh toán.';
@@ -210,13 +211,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             exit();
         }
 
+        // Validate paymentMethod to match database enum
+        $allowedMethods = ['cash', 'card', 'transfer', 'e-wallet'];
+        if (!in_array($paymentMethod, $allowedMethods)) {
+            $paymentMethod = 'cash';
+        }
+
         $conn->begin_transaction();
         try {
-            $stmt = $conn->prepare("UPDATE Orders SET ENUM = 'paid' WHERE OrderID = ?");
-            $stmt->bind_param("s", $orderID);
+            $stmt = $conn->prepare("UPDATE Orders SET ENUM = 'paid', PaymentMethod = ? WHERE OrderID = ?");
+            $stmt->bind_param("ss", $paymentMethod, $orderID);
             $stmt->execute();
             $stmt->close();
-            error_log("Updated Order status to 'paid' for OrderID=" . $orderID);
+            error_log("Updated Order status to 'paid' and PaymentMethod to '" . $paymentMethod . "' for OrderID=" . $orderID);
 
             $transactionID = 'trans' . uniqid();
             $stmt = $conn->prepare("INSERT INTO Transactions (TransactionID, OrderID, Amount, Timestamp) VALUES (?, ?, ?, NOW())");

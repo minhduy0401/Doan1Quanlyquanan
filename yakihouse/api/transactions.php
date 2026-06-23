@@ -10,7 +10,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
     $startDate = $_GET['startDate'] ?? null;
     $endDate = $_GET['endDate'] ?? null;
 
-    $query = "SELECT tr.*, t.Name as TableName FROM Transactions tr JOIN Orders o ON tr.OrderID = o.OrderID JOIN Tables t ON o.TableID = t.TableID";
+    $query = "SELECT tr.*, t.Name as TableName, o.PaymentMethod FROM Transactions tr JOIN Orders o ON tr.OrderID = o.OrderID JOIN Tables t ON o.TableID = t.TableID";
     $params = [];
     $types = "";
 

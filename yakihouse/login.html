@@ -114,9 +114,21 @@
                         sessionStorage.setItem('staffId', data.user.id); 
 
                         let targetPage = 'index.html';
-                        if (redirectTo === 'revenue') targetPage = 'revenue.html';
-                        else if (redirectTo === 'staff') targetPage = 'staff.html';
-                        else if (redirectTo === 'add_dish') targetPage = 'add_dish.html';
+                        if (redirectTo) {
+                            // Danh sách các trang cục bộ hợp lệ trong hệ thống
+                            const allowedPages = ['index.html', 'dashboard.html', 'dishes.html', 'staff.html', 'ingredients.html', 'revenue.html', 'shifts_report.html', 'change_password.html'];
+                            let mappedPage = redirectTo.trim();
+                            if (!mappedPage.endsWith('.html')) {
+                                if (mappedPage === 'add_dish' || mappedPage === 'dishes') {
+                                    mappedPage = 'dishes.html';
+                                } else {
+                                    mappedPage = mappedPage + '.html';
+                                }
+                            }
+                            if (allowedPages.includes(mappedPage)) {
+                                targetPage = mappedPage;
+                            }
+                        }
 
                         window.location.href = targetPage;
                     } else {

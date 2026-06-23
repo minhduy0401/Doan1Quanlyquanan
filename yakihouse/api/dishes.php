@@ -12,15 +12,18 @@ error_log("dishes.php - Request Method: " . $request_method);
 error_log("dishes.php - Input data: " . print_r($input, true));
 
 switch ($request_method) {
-    case 'POST': // Thêm món ăn mới
+    case 'POST': // Thêm hoặc sửa món ăn
+        $dishId = $input['dishId'] ?? $input['id'] ?? '';
         $name = $input['name'] ?? '';
         $price = $input['price'] ?? 0;
         $category = $input['category'] ?? '';
+        $description = $input['description'] ?? '';
         $imageBase64 = $input['image'] ?? ''; 
 
-        if (empty($name) || empty($price) || empty($category) || empty($imageBase64)) {
+        // Nếu là thêm mới (không có dishId), bắt buộc phải có ảnh. Nếu là sửa (có dishId), ảnh là tùy chọn
+        if (empty($name) || empty($price) || empty($category) || (empty($dishId) && empty($imageBase64))) {
             $response['message'] = 'Vui lòng điền đầy đủ thông tin món ăn.';
-            error_log("dishes.php POST error: Missing required fields (name, price, category, image).");
+            error_log("dishes.php POST error: Missing required fields (name, price, category, or image for new dish).");
             break;
         }
 
@@ -28,12 +31,10 @@ switch ($request_method) {
         $filePath = null; 
 
         if (!empty($imageBase64)) {
-          
             if (strpos($imageBase64, ',') !== false) {
                 list($type, $data) = explode(';', $imageBase64);
                 list(, $data) = explode(',', $data);
             } else {
-               
                 $data = $imageBase64;
                 $type = 'image/png'; 
             }
@@ -65,7 +66,6 @@ switch ($request_method) {
 
             $filePath = $uploadDir . $fileName; 
             
-            
             if (file_put_contents($filePath, $data)) {
                 $imagePath = 'image/uploaded_dishes/' . $fileName; 
                 error_log("dishes.php POST: Image saved to " . $filePath);
@@ -76,27 +76,62 @@ switch ($request_method) {
             }
         }
 
-        $dishID = 'd' . uniqid(); // Tạo ID cho món ăn
-        $stmt = $conn->prepare("INSERT INTO Dishes (DishID, Name, Price, Category, ImagePath) VALUES (?, ?, ?, ?, ?)");
-        $stmt->bind_param("ssdss", $dishID, $name, $price, $category, $imagePath);
+        if (!empty($dishId)) {
+            // Thực hiện cập nhật (UPDATE) món ăn
+            if ($imagePath !== null) {
+                // Xóa ảnh cũ trước khi cập nhật đường dẫn mới
+                $stmt = $conn->prepare("SELECT ImagePath FROM Dishes WHERE DishID = ?");
+                $stmt->bind_param("s", $dishId);
+                $stmt->execute();
+                $res = $stmt->get_result()->fetch_assoc();
+                $stmt->close();
+                if ($res && !empty($res['ImagePath'])) {
+                    $oldImage = '../' . $res['ImagePath'];
+                    if (file_exists($oldImage)) {
+                        unlink($oldImage);
+                    }
+                }
 
-        if ($stmt->execute()) {
-            $response['success'] = true;
-            $response['message'] = 'Món ăn đã được thêm thành công!';
-        } else {
-            $response['message'] = 'Lỗi khi thêm món ăn vào cơ sở dữ liệu: ' . $stmt->error;
-            error_log("dishes.php POST error: SQL error when inserting dish: " . $stmt->error);
-            
-            if ($filePath && file_exists($filePath)) {
-                unlink($filePath);
-                error_log("dishes.php POST: Deleted duplicate image file due to DB insertion error: " . $filePath);
+                $stmt = $conn->prepare("UPDATE Dishes SET Name = ?, Price = ?, Category = ?, Description = ?, ImagePath = ? WHERE DishID = ?");
+                $stmt->bind_param("sdsdss", $name, $price, $category, $description, $imagePath, $dishId);
+            } else {
+                $stmt = $conn->prepare("UPDATE Dishes SET Name = ?, Price = ?, Category = ?, Description = ? WHERE DishID = ?");
+                $stmt->bind_param("sdsss", $name, $price, $category, $description, $dishId);
             }
+
+            if ($stmt->execute()) {
+                $response['success'] = true;
+                $response['message'] = 'Món ăn đã được cập nhật thành công!';
+            } else {
+                $response['message'] = 'Lỗi khi cập nhật món ăn vào cơ sở dữ liệu: ' . $stmt->error;
+                error_log("dishes.php POST UPDATE error: SQL error when updating dish: " . $stmt->error);
+                if ($filePath && file_exists($filePath)) {
+                    unlink($filePath);
+                }
+            }
+            $stmt->close();
+        } else {
+            // Thực hiện thêm mới (INSERT)
+            $dishID = 'd' . uniqid(); // Tạo ID cho món ăn
+            $stmt = $conn->prepare("INSERT INTO Dishes (DishID, Name, Price, Category, Description, ImagePath) VALUES (?, ?, ?, ?, ?, ?)");
+            $stmt->bind_param("ssdsss", $dishID, $name, $price, $category, $description, $imagePath);
+
+            if ($stmt->execute()) {
+                $response['success'] = true;
+                $response['message'] = 'Món ăn đã được thêm thành công!';
+            } else {
+                $response['message'] = 'Lỗi khi thêm món ăn vào cơ sở dữ liệu: ' . $stmt->error;
+                error_log("dishes.php POST INSERT error: SQL error when inserting dish: " . $stmt->error);
+                if ($filePath && file_exists($filePath)) {
+                    unlink($filePath);
+                }
+            }
+            $stmt->close();
         }
-        $stmt->close();
         break;
 
     case 'GET': // Lấy danh sách món ăn
-        $stmt = $conn->prepare("SELECT DishID, Name, Price, Category, ImagePath FROM Dishes ORDER BY Name ASC");
+        $stmt = $conn->prepare("SELECT DishID, Name, Price, Category, Description, ImagePath FROM Dishes ORDER BY Name ASC");
         $stmt->execute();
         $result = $stmt->get_result();
         $dishes = [];
@@ -110,7 +145,7 @@ switch ($request_method) {
         break;
 
     case 'PUT': // Cập nhật giá món ăn
-        $id = $input['id'] ?? '';
+        $id = $input['dishId'] ?? $input['id'] ?? '';
         $price = $input['price'] ?? 0;
 
         if (empty($id) || $price <= 0) {
@@ -133,7 +168,7 @@ switch ($request_method) {
         break;
 
     case 'DELETE': // Xóa món ăn
-        $id = $input['id'] ?? '';
+        $id = $input['dishId'] ?? $input['id'] ?? '';
 
         if (empty($id)) {
             $response['message'] = 'Thiếu ID món ăn để xóa.';
@@ -141,7 +176,6 @@ switch ($request_method) {
             break;
         }
 
-      
         $stmt = $conn->prepare("SELECT ImagePath FROM Dishes WHERE DishID = ?");
         $stmt->bind_param("s", $id);
         $stmt->execute();
@@ -161,7 +195,6 @@ switch ($request_method) {
                 error_log("dishes.php DELETE WARNING: Image file not found on disk: " . $fullImagePath . ". It might have been deleted manually or path is wrong.");
             }
         }
-
 
         $stmt = $conn->prepare("DELETE FROM Dishes WHERE DishID = ?");
         $stmt->bind_param("s", $id);

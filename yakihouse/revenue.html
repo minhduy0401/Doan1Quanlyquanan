@@ -1,153 +1,234 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Báo Cáo Doanh Thu</title>
+    <title>Báo Cáo Doanh Thu - Quán Buffet BBQ</title>
     <link rel="stylesheet" href="style.css">
-    <style>
-        .revenue-container {
-            background-color: #fff;
-            padding: 30px;
-            border-radius: 10px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-            max-width: 800px;
-            width: 100%;
-            margin: 30px auto;
-        }
-        .revenue-container h1 {
-            text-align: center;
-            color: #2c3e50;
-            margin-bottom: 30px;
-        }
-        .revenue-section {
-            margin-bottom: 25px;
-            border: 1px solid #eee;
-            border-radius: 8px;
-            padding: 20px;
-            background-color: #fcfcfc;
-        }
-        .revenue-section h2 {
-            color: #34495e;
-            margin-top: 0;
-            border-bottom: 1px solid #e0e0e0;
-            padding-bottom: 10px;
-            margin-bottom: 15px;
-        }
-        .filter-controls {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 10px;
-            margin-bottom: 20px;
-            flex-wrap: wrap;
-        }
-        .filter-controls input, .filter-controls button {
-            padding: 8px;
-            border-radius: 5px;
-            border: 1px solid #ccc;
-        }
-        .filter-controls button {
-            cursor: pointer;
-            background-color: #007bff;
-            color: white;
-            border: none;
-            transition: background-color 0.3s ease;
-        }
-        .filter-controls button:hover {
-            background-color: #0056b3;
-        }
-        .delete-history-btn {
-            background-color: #dc3545;
-            color: white;
-            border: none;
-            padding: 10px 15px;
-            border-radius: 5px;
-            cursor: pointer;
-            margin-top: 20px;
-            display: block;
-            width: 100%;
-            text-align: center;
-        }
-        .delete-history-btn:hover {
-            background-color: #c82333;
-        }
-        .total-revenue-value {
-            font-size: 1.5em;
-            color: #28a745;
-        }
-        .transaction-list {
-            margin-top: 25px;
-        }
-        .transaction-list ul {
-            list-style-type: none;
-            padding: 0;
-            background-color: #f8f9fa;
-            border-radius: 8px;
-            max-height: 400px;
-            overflow-y: auto;
-        }
-        .transaction-list li {
-            padding: 10px;
-            border-bottom: 1px solid #eee;
-        }
-        .transaction-list li:last-child {
-            border-bottom: none;
-        }
-        .empty-message {
-            color: #6c757d;
-            text-align: center;
-            padding: 20px;
-        }
-        canvas {
-            background: #fff;
-            padding: 10px;
-            border-radius: 8px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
-        }
-    </style>
 </head>
 <body>
-    <div class="revenue-container">
-        <h1>Báo Cáo Doanh Thu</h1>
-        <div class="header-logo">
-            <img src="image/logo.png" alt="Logo" />
-        </div>
-        <div class="revenue-section">
-            <h2>Doanh Thu Theo Thời Gian</h2>
-            <p>Doanh thu Ngày: <strong id="dailyRevenue">0 VND</strong></p>
-            <p>Doanh thu Tuần: <strong id="weeklyRevenue">0 VND</strong></p>
-            <p>Doanh thu Tháng: <strong id="monthlyRevenue">0 VND</strong></p>
-            <p>Doanh thu Năm: <strong id="yearlyRevenue">0 VND</strong></p>
-            <p>Tổng Doanh thu (Theo lọc): <strong id="totalFilteredRevenue" class="total-revenue-value">0 VND</strong></p>
-        </div>
-        
-        <div class="revenue-section">
-            <h2>Biểu Đồ Doanh Thu</h2>
-            <canvas id="revenueChart"></canvas>
-        </div>
+    <!-- Kiểm tra đăng nhập -->
+    <script>
+        const isLoggedIn = sessionStorage.getItem('isLoggedIn');
+        const role = sessionStorage.getItem('role');
+        if (isLoggedIn !== 'true') {
+            alert('Bạn cần đăng nhập để sử dụng hệ thống!');
+            window.location.href = 'login.html?redirect=revenue';
+        }
+        if (role !== 'Quản lý') {
+            alert('Chỉ quản lý mới có quyền truy cập trang này!');
+            window.location.href = 'index.html';
+        }
+    </script>
 
-        <div class="filter-controls">
-            <label for="startDate">Từ ngày:</label>
-            <input type="date" id="startDate">
-            <label for="endDate">Đến ngày:</label>
-            <input type="date" id="endDate">
-            <button id="filterRevenueBtn">Lọc Doanh Thu</button>
-            <button id="resetFilterBtn" style="background-color: #6c757d;">Đặt Lại</button>
+    <!-- SIDEBAR NAVIGATION -->
+    <aside class="sidebar">
+        <div class="sidebar-logo">
+            <img src="image/logo.png" alt="Quán Buffet BBQ Logo" />
+            <h3>Quán Buffet BBQ</h3>
         </div>
+        <ul class="sidebar-menu">
+            <li class="sidebar-menu-item">
+                <a href="dashboard.html" class="sidebar-menu-link">📊 Dashboard</a>
+            </li>
+            <li class="sidebar-menu-item">
+                <a href="index.html" class="sidebar-menu-link">📋 Gọi Món & Tính Bill</a>
+            </li>
+            <li class="sidebar-menu-item">
+                <a href="dishes.html" class="sidebar-menu-link">🍜 Quản Lý Món Ăn</a>
+            </li>
+            <li class="sidebar-menu-item">
+                <a href="staff.html" class="sidebar-menu-link">👥 Quản Lý Nhân Viên</a>
+            </li>
+            <li class="sidebar-menu-item">
+                <a href="ingredients.html" class="sidebar-menu-link">📦 Kho Nguyên Liệu</a>
+            </li>
+            <li class="sidebar-menu-item">
+                <a href="revenue.html" class="sidebar-menu-link active">💰 Báo Cáo Doanh Thu</a>
+            </li>
+            <li class="sidebar-menu-item">
+                <a href="shifts_report.html" class="sidebar-menu-link">⏰ Quản Lý Ca Làm</a>
+            </li>
+            <li class="sidebar-menu-item">
+                <a href="change_password.html" class="sidebar-menu-link">🔑 Đổi Mật Khẩu</a>
+            </li>
+            <li class="sidebar-menu-item">
+                <a href="#" id="logoutLink" class="sidebar-menu-link">🚪 Đăng Xuất</a>
+            </li>
+        </ul>
+    </aside>
 
-        <div class="transaction-list">
-            <h2>Lịch Sử Giao Dịch</h2>
-            <ul id="transactionList">
-                <li class="empty-message">Chưa có giao dịch nào được ghi nhận.</li>
-            </ul>
+    <!-- TOPBAR -->
+    <header class="topbar">
+        <div class="topbar-title">💰 Báo Cáo Doanh Thu</div>
+        <div class="topbar-user">
+            <div class="user-profile">
+                <div class="user-avatar" id="userAvatarTop">Q</div>
+                <div class="user-info">
+                    <div class="user-name" id="userNameTop">Quản lý</div>
+                    <div class="user-role" id="userRoleTop">Quản lý</div>
+                </div>
+            </div>
         </div>
-        <button id="deleteHistoryBtn" class="delete-history-btn">Xóa Lịch Sử Doanh Thu</button>
-        <br>
-        <a href="index.html" style="display: block; text-align: center; margin-top: 20px;">Quay lại trang chính</a>
+    </header>
+
+    <!-- HAMBURGER MENU (Mobile) -->
+    <div id="hamburgerMenu" class="hamburger-menu">
+        <button id="hamburgerBtn" class="hamburger-btn">
+            <span></span>
+            <span></span>
+            <span></span>
+        </button>
+        <div id="navLinks" class="nav-links">
+            <a href="dashboard.html">📊 Dashboard</a>
+            <a href="index.html">📋 Gọi Món & Tính Bill</a>
+            <a href="dishes.html">🍜 Quản Lý Món Ăn</a>
+            <a href="staff.html">👥 Quản Lý Nhân Viên</a>
+            <a href="ingredients.html">📦 Kho Nguyên Liệu</a>
+            <a href="revenue.html">💰 Báo Cáo Doanh Thu</a>
+            <a href="shifts_report.html">⏰ Quản Lý Ca Làm</a>
+            <a href="change_password.html">🔑 Đổi Mật Khẩu</a>
+            <a href="#" id="mobileLogout">🚪 Đăng Xuất</a>
+        </div>
     </div>
 
+    <!-- MAIN CONTENT -->
+    <main class="main-content">
+        <div class="container">
+            <!-- TOOLBAR & TITLE -->
+            <div class="flex-between mb-3">
+                <h1 style="margin: 0;">💰 Báo Cáo Doanh Thu</h1>
+            </div>
+
+            <!-- STAT CARDS -->
+            <div class="card-stats mb-3">
+                <div class="stat-card primary">
+                    <div class="stat-value" id="dailyRevenue">0đ</div>
+                    <div class="stat-label">Doanh Thu Hôm Nay</div>
+                </div>
+                <div class="stat-card success">
+                    <div class="stat-value" id="weeklyRevenue">0đ</div>
+                    <div class="stat-label">Doanh Thu Tuần</div>
+                </div>
+                <div class="stat-card warning">
+                    <div class="stat-value" id="monthlyRevenue">0đ</div>
+                    <div class="stat-label">Doanh Thu Tháng</div>
+                </div>
+                <div class="stat-card info">
+                    <div class="stat-value" id="yearlyRevenue">0đ</div>
+                    <div class="stat-label">Doanh Thu Năm</div>
+                </div>
+            </div>
+
+            <!-- FILTER SECTION -->
+            <div class="card mb-3">
+                <h2>🔍 Lọc Doanh Thu</h2>
+                <div class="form-inline">
+                    <div class="form-group">
+                        <label for="startDate">Từ ngày:</label>
+                        <input type="date" id="startDate">
+                    </div>
+                    <div class="form-group">
+                        <label for="endDate">Đến ngày:</label>
+                        <input type="date" id="endDate">
+                    </div>
+                    <div class="form-group">
+                        <label>&nbsp;</label>
+                        <div style="display: flex; gap: 0.5rem;">
+                            <button id="filterRevenueBtn" class="btn btn-primary">🔍 Lọc</button>
+                            <button id="resetFilterBtn" class="btn btn-secondary">🔄 Đặt Lại</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="mt-2">
+                    <strong>Tổng Doanh Thu (Đã Lọc):</strong> <span id="totalFilteredRevenue" style="color: var(--success-color); font-size: 1.3em; font-weight: bold;">0đ</span>
+                </div>
+            </div>
+
+            <!-- CHART SECTION -->
+            <div class="card mb-3">
+                <h2>📊 Biểu Đồ Doanh Thu</h2>
+                <div style="position: relative; height: 350px;">
+                    <canvas id="revenueChart"></canvas>
+                </div>
+            </div>
+
+            <!-- TRANSACTIONS LIST -->
+            <div class="card">
+                <div class="flex-between mb-2">
+                    <h2 style="margin: 0;">📋 Lịch Sử Giao Dịch</h2>
+                    <button id="deleteHistoryBtn" class="btn btn-danger">🗑️ Xóa Lịch Sử</button>
+                </div>
+                <div style="overflow-x: auto;">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Thời Gian</th>
+                                <th>Bàn</th>
+                                <th>Phương Thức</th>
+                                <th>Số Tiền</th>
+                            </tr>
+                        </thead>
+                        <tbody id="transactionList">
+                            <tr>
+                                <td colspan="4" class="text-center">Đang tải...</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- SCRIPTS -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="revenue-script.js"></script>
+    <script>
+        // Common UI Scripts
+        document.addEventListener('DOMContentLoaded', () => {
+            // Hamburger Menu
+            const hamburgerBtn = document.getElementById('hamburgerBtn');
+            const hamburgerMenu = document.getElementById('hamburgerMenu');
+
+            if (hamburgerBtn) {
+                hamburgerBtn.addEventListener('click', () => {
+                    hamburgerMenu.classList.toggle('open');
+                });
+            }
+
+            // Display user info
+            const staffName = sessionStorage.getItem('staffName') || 'Quản lý';
+            const role = sessionStorage.getItem('role') || 'Quản lý';
+            const userAvatar = staffName.charAt(0).toUpperCase();
+
+            document.getElementById('userNameTop').textContent = staffName;
+            document.getElementById('userRoleTop').textContent = role;
+            document.getElementById('userAvatarTop').textContent = userAvatar;
+
+            // Logout Handler
+            const logoutLink = document.getElementById('logoutLink');
+            const mobileLogout = document.getElementById('mobileLogout');
+
+            [logoutLink, mobileLogout].forEach(btn => {
+                if (btn) {
+                    btn.addEventListener('click', (e) => {
+                        e.preventDefault();
+                        if (confirm('Bạn có chắc chắn muốn đăng xuất?')) {
+                            sessionStorage.clear();
+                            window.location.href = 'login.html';
+                        }
+                    });
+                }
+            });
+
+            // Close mobile menu
+            const navLinks = document.querySelectorAll('.nav-links a');
+            navLinks.forEach(link => {
+                link.addEventListener('click', () => {
+                    hamburgerMenu.classList.remove('open');
+                });
+            });
+        });
+    </script>
 </body>
 </html>

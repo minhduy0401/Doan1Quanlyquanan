@@ -1,99 +1,272 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="vi">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Quản Lý Nguyên Liệu</title>
-  <link rel="stylesheet" href="style.css" />
-  <style>
-    .container { max-width: 960px; margin: auto; padding: 20px; }
-    table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-    table th, table td { border: 1px solid #ccc; padding: 8px; text-align: left; }
-    table th { background-color: #f8f8f8; }
-    .out-of-stock { color: red; font-weight: bold; }
-    form { margin-top: 30px; padding: 15px; border: 1px solid #ddd; border-radius: 8px; background: #fafafa; }
-    form input, form select, form button { margin: 8px 0; padding: 8px; width: 100%; }
-    #saveButton { background-color: #4CAF50; color: white; }
-    #saveButton:hover { background-color: #45a049; }
-    .delete-btn { background: red; color: white; border: none; padding: 5px 10px; cursor: pointer; }
-  </style>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Quản Lý Kho Nguyên Liệu - Quán Buffet BBQ</title>
+    <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <script>
-    document.addEventListener('DOMContentLoaded', () => {
-      const role = sessionStorage.getItem('role');
-      if (!role) {
-        alert('Bạn cần đăng nhập!');
-        window.location.href = 'login.html?redirect=ingredients';
-        return;
-      }
-      if (!['Quản lý', 'Bếp', 'Bếp trưởng', 'Thu ngân'].includes(role)) {
-        document.body.innerHTML = '<p style="text-align:center; margin-top:50px; font-size:20px; color:red;">Bạn không có quyền truy cập trang này.</p>';
-        return;
-      }
-      if (role !== 'Quản lý') {
-        const formSection = document.getElementById('logForm');
-        if (formSection) formSection.style.display = 'none';
-        const formTitle = document.querySelector('.form-title');
-        if (formTitle) formTitle.style.display = 'none';
-      }
-    });
-  </script>
+    <!-- Kiểm tra đăng nhập -->
+    <script>
+        const isLoggedIn = sessionStorage.getItem('isLoggedIn');
+        const role = sessionStorage.getItem('role');
+        if (isLoggedIn !== 'true') {
+            alert('Bạn cần đăng nhập để sử dụng hệ thống!');
+            window.location.href = 'login.html?redirect=ingredients';
+        }
+        if (!['Quản lý', 'Bếp', 'Bếp trưởng', 'Thu ngân'].includes(role)) {
+            alert('Bạn không có quyền truy cập trang này!');
+            window.location.href = 'index.html';
+        }
+    </script>
 
-  <div class="container">
-    <h1>Quản Lý Kho Nguyên Liệu</h1>
-    <div id="statusMessage" style="color:red;font-weight:bold;margin-bottom:15px;"></div>
+    <!-- SIDEBAR NAVIGATION -->
+    <aside class="sidebar">
+        <div class="sidebar-logo">
+            <img src="image/logo.png" alt="Quán Buffet BBQ Logo" />
+            <h3>Quán Buffet BBQ</h3>
+        </div>
+        <ul class="sidebar-menu">
+            <li class="sidebar-menu-item">
+                <a href="dashboard.html" class="sidebar-menu-link">📊 Dashboard</a>
+            </li>
+            <li class="sidebar-menu-item">
+                <a href="index.html" class="sidebar-menu-link">📋 Gọi Món & Tính Bill</a>
+            </li>
+            <li class="sidebar-menu-item">
+                <a href="dishes.html" class="sidebar-menu-link">🍜 Quản Lý Món Ăn</a>
+            </li>
+            <li class="sidebar-menu-item">
+                <a href="staff.html" class="sidebar-menu-link">👥 Quản Lý Nhân Viên</a>
+            </li>
+            <li class="sidebar-menu-item">
+                <a href="ingredients.html" class="sidebar-menu-link active">📦 Kho Nguyên Liệu</a>
+            </li>
+            <li class="sidebar-menu-item">
+                <a href="revenue.html" class="sidebar-menu-link">💰 Báo Cáo Doanh Thu</a>
+            </li>
+            <li class="sidebar-menu-item">
+                <a href="shifts_report.html" class="sidebar-menu-link">⏰ Quản Lý Ca Làm</a>
+            </li>
+            <li class="sidebar-menu-item">
+                <a href="change_password.html" class="sidebar-menu-link">🔑 Đổi Mật Khẩu</a>
+            </li>
+            <li class="sidebar-menu-item">
+                <a href="#" id="logoutLink" class="sidebar-menu-link">🚪 Đăng Xuất</a>
+            </li>
+        </ul>
+    </aside>
 
-    <h2>Danh Sách Nguyên Liệu</h2>
-    <table id="ingredientTable">
-      <thead>
-        <tr>
-          <th>Tên</th>
-          <th>Đơn vị</th>
-          <th>Số lượng</th>
-          <th>Ghi chú</th>
-        </tr>
-      </thead>
-      <tbody></tbody>
-    </table>
+    <!-- TOPBAR -->
+    <header class="topbar">
+        <div class="topbar-title">📦 Quản Lý Kho Nguyên Liệu</div>
+        <div class="topbar-user">
+            <div class="user-profile">
+                <div class="user-avatar" id="userAvatarTop">Q</div>
+                <div class="user-info">
+                    <div class="user-name" id="userNameTop">Nhân viên</div>
+                    <div class="user-role" id="userRoleTop">Quản lý</div>
+                </div>
+            </div>
+        </div>
+    </header>
 
-    <h2 class="form-title">➕ Nhập/Xuất Kho</h2>
-    <form id="logForm">
-      <label for="ingredient-name">Tên nguyên liệu:</label>
-      <input type="text" id="ingredient-name" required>
-      <label for="ingredient-unit">Đơn vị:</label>
-      <input type="text" id="ingredient-unit" placeholder="Ví dụ: kg, lít">
-      <label for="action">Loại:</label>
-      <select id="action">
-        <option value="add">Nhập kho</option>
-        <option value="subtract">Xuất kho</option>
-      </select>
-      <label for="quantity">Số lượng:</label>
-      <input type="number" id="quantity" min="1" step="0.01" required>
-      <label for="note">Ghi chú:</label>
-      <input type="text" id="note">
-      <button type="submit" id="saveButton">Lưu</button>
-    </form>
+    <!-- HAMBURGER MENU (Mobile) -->
+    <div id="hamburgerMenu" class="hamburger-menu">
+        <button id="hamburgerBtn" class="hamburger-btn">
+            <span></span>
+            <span></span>
+            <span></span>
+        </button>
+        <div id="navLinks" class="nav-links">
+            <a href="dashboard.html">📊 Dashboard</a>
+            <a href="index.html">📋 Gọi Món & Tính Bill</a>
+            <a href="dishes.html">🍜 Quản Lý Món Ăn</a>
+            <a href="staff.html">👥 Quản Lý Nhân Viên</a>
+            <a href="ingredients.html">📦 Kho Nguyên Liệu</a>
+            <a href="revenue.html">💰 Báo Cáo Doanh Thu</a>
+            <a href="shifts_report.html">⏰ Quản Lý Ca Làm</a>
+            <a href="change_password.html">🔑 Đổi Mật Khẩu</a>
+            <a href="#" id="mobileLogout">🚪 Đăng Xuất</a>
+        </div>
+    </div>
 
-    <h2>Lịch sử Nhập/Xuất Kho</h2>
-    <table id="logTable">
-      <thead>
-        <tr>
-          <th>ID</th>
-          <th>Nguyên liệu</th>
-          <th>Loại</th>
-          <th>Số lượng</th>
-          <th>Thời gian</th>
-          <th>Ghi chú</th>
-          <th>Hành động</th>
-        </tr>
-      </thead>
-      <tbody></tbody>
-    </table>
+    <!-- MAIN CONTENT -->
+    <main class="main-content">
+        <div class="container">
+            <!-- TOOLBAR & TITLE -->
+            <div class="flex-between mb-3">
+                <h1 style="margin: 0;">📦 Quản Lý Kho Nguyên Liệu</h1>
+            </div>
 
-    <a href="index.html" style="display:block;text-align:center;margin-top:20px;color:#007bff;text-decoration:none;">Quay lại trang chính</a>
-  </div>
+            <!-- STAT CARDS -->
+            <div class="card-stats mb-3">
+                <div class="stat-card info">
+                    <div class="stat-value" id="totalIngredients">0</div>
+                    <div class="stat-label">Tổng Nguyên Liệu</div>
+                </div>
+                <div class="stat-card danger">
+                    <div class="stat-value" id="outOfStock">0</div>
+                    <div class="stat-label">Hết Hàng</div>
+                </div>
+                <div class="stat-card warning">
+                    <div class="stat-value" id="lowStock">0</div>
+                    <div class="stat-label">Sắp Hết</div>
+                </div>
+                <div class="stat-card success">
+                    <div class="stat-value" id="totalLogs">0</div>
+                    <div class="stat-label">Lịch Sử Nhập/Xuất</div>
+                </div>
+            </div>
 
-  <script src="ingredients.js"></script>
+            <div id="statusMessage" class="alert alert-info" style="display: none;"></div>
+
+            <!-- DANH SÁCH NGUYÊN LIỆU -->
+            <div class="card mb-3">
+                <h2>📋 Danh Sách Nguyên Liệu</h2>
+                <div style="overflow-x: auto;">
+                    <table class="table" id="ingredientTable">
+                        <thead>
+                            <tr>
+                                <th>Tên Nguyên Liệu</th>
+                                <th>Đơn Vị</th>
+                                <th>Số Lượng</th>
+                                <th>Trạng Thái</th>
+                                <th>Ghi Chú</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td colspan="5" class="text-center">Đang tải...</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- FORM NHẬP/XUẤT KHO (CHỈ QUẢN LÝ) -->
+            <div class="card mb-3" id="logFormCard">
+                <h2>➕ Nhập/Xuất Kho</h2>
+                <form id="logForm">
+                    <div class="form-inline">
+                        <div class="form-group">
+                            <label for="ingredient-name">Tên nguyên liệu: <span class="text-danger">*</span></label>
+                            <input type="text" id="ingredient-name" placeholder="Ví dụ: Thịt bò" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="ingredient-unit">Đơn vị:</label>
+                            <input type="text" id="ingredient-unit" placeholder="kg, lít, gói...">
+                        </div>
+                    </div>
+                    <div class="form-inline">
+                        <div class="form-group">
+                            <label for="action">Loại giao dịch: <span class="text-danger">*</span></label>
+                            <select id="action" required>
+                                <option value="add">📥 Nhập kho</option>
+                                <option value="subtract">📤 Xuất kho</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="quantity">Số lượng: <span class="text-danger">*</span></label>
+                            <input type="number" id="quantity" min="0.01" step="0.01" placeholder="0.00" required>
+                        </div>
+                    </div>
+                    <div class="form-inline">
+                        <div class="form-group">
+                            <label for="note">Ghi chú:</label>
+                            <input type="text" id="note" placeholder="Ghi chú thêm (không bắt buộc)">
+                        </div>
+                        <div class="form-group">
+                            <label>&nbsp;</label>
+                            <button type="submit" id="saveButton" class="btn btn-success">💾 Lưu</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+
+            <!-- LỊCH SỬ NHẬP/XUẤT KHO -->
+            <div class="card">
+                <h2>📜 Lịch Sử Nhập/Xuất Kho</h2>
+                <div style="overflow-x: auto;">
+                    <table class="table" id="logTable">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Nguyên Liệu</th>
+                                <th>Loại</th>
+                                <th>Số Lượng</th>
+                                <th>Thời Gian</th>
+                                <th>Ghi Chú</th>
+                                <th>Hành Động</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td colspan="7" class="text-center">Đang tải...</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- SCRIPTS -->
+    <script src="ingredients.js"></script>
+    <script>
+        // Common UI Scripts
+        document.addEventListener('DOMContentLoaded', () => {
+            const role = sessionStorage.getItem('role');
+            
+            // Hide form if not Quản lý
+            if (role !== 'Quản lý') {
+                const formCard = document.getElementById('logFormCard');
+                if (formCard) formCard.style.display = 'none';
+            }
+
+            // Hamburger Menu
+            const hamburgerBtn = document.getElementById('hamburgerBtn');
+            const hamburgerMenu = document.getElementById('hamburgerMenu');
+
+            if (hamburgerBtn) {
+                hamburgerBtn.addEventListener('click', () => {
+                    hamburgerMenu.classList.toggle('open');
+                });
+            }
+
+            // Display user info
+            const staffName = sessionStorage.getItem('staffName') || 'Nhân viên';
+            const userAvatar = staffName.charAt(0).toUpperCase();
+
+            document.getElementById('userNameTop').textContent = staffName;
+            document.getElementById('userRoleTop').textContent = role;
+            document.getElementById('userAvatarTop').textContent = userAvatar;
+
+            // Logout Handler
+            const logoutLink = document.getElementById('logoutLink');
+            const mobileLogout = document.getElementById('mobileLogout');
+
+            [logoutLink, mobileLogout].forEach(btn => {
+                if (btn) {
+                    btn.addEventListener('click', (e) => {
+                        e.preventDefault();
+                        if (confirm('Bạn có chắc chắn muốn đăng xuất?')) {
+                            sessionStorage.clear();
+                            window.location.href = 'login.html';
+                        }
+                    });
+                }
+            });
+
+            // Close mobile menu
+            const navLinks = document.querySelectorAll('.nav-links a');
+            navLinks.forEach(link => {
+                link.addEventListener('click', () => {
+                    hamburgerMenu.classList.remove('open');
+                });
+            });
+        });
+    </script>
 </body>
 </html>

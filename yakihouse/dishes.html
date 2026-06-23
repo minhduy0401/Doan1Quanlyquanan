@@ -1,0 +1,287 @@
+﻿<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quản Lý Món Ăn - Quán Buffet BBQ</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Kiểm tra đăng nhập -->
+    <script>
+        const isLoggedIn = sessionStorage.getItem('isLoggedIn');
+        const role = sessionStorage.getItem('role');
+        if (isLoggedIn !== 'true') {
+            alert('Bạn cần đăng nhập để sử dụng hệ thống!');
+            window.location.href = 'login.html?redirect=dishes';
+        }
+        if (role !== 'Quản lý') {
+            alert('Chỉ quản lý mới có quyền truy cập trang này!');
+            window.location.href = 'index.html';
+        }
+    </script>
+
+    <!-- SIDEBAR NAVIGATION -->
+    <aside class="sidebar">
+        <div class="sidebar-logo">
+            <img src="image/logo.png" alt="Quán Buffet BBQ Logo" />
+            <h3>Quán Buffet BBQ</h3>
+        </div>
+        <ul class="sidebar-menu">
+            <li class="sidebar-menu-item">
+                <a href="dashboard.html" class="sidebar-menu-link">📊 Dashboard</a>
+            </li>
+            <li class="sidebar-menu-item">
+                <a href="index.html" class="sidebar-menu-link">📋 Gọi Món & Tính Bill</a>
+            </li>
+            <li class="sidebar-menu-item">
+                <a href="dishes.html" class="sidebar-menu-link active">🍜 Quản Lý Món Ăn</a>
+            </li>
+            <li class="sidebar-menu-item">
+                <a href="staff.html" class="sidebar-menu-link">👥 Quản Lý Nhân Viên</a>
+            </li>
+            <li class="sidebar-menu-item">
+                <a href="ingredients.html" class="sidebar-menu-link">📦 Kho Nguyên Liệu</a>
+            </li>
+            <li class="sidebar-menu-item">
+                <a href="revenue.html" class="sidebar-menu-link">💰 Báo Cáo Doanh Thu</a>
+            </li>
+            <li class="sidebar-menu-item">
+                <a href="shifts_report.html" class="sidebar-menu-link">⏰ Quản Lý Ca Làm</a>
+            </li>
+            <li class="sidebar-menu-item">
+                <a href="change_password.html" class="sidebar-menu-link">🔑 Đổi Mật Khẩu</a>
+            </li>
+            <li class="sidebar-menu-item">
+                <a href="#" id="logoutLink" class="sidebar-menu-link">🚪 Đăng Xuất</a>
+            </li>
+        </ul>
+    </aside>
+
+    <!-- TOPBAR -->
+    <header class="topbar">
+        <div class="topbar-title">🍜 Quản Lý Món Ăn</div>
+        <div class="topbar-user">
+            <div class="user-profile">
+                <div class="user-avatar" id="userAvatarTop">A</div>
+                <div class="user-info">
+                    <div class="user-name" id="userNameTop">Nhân viên</div>
+                    <div class="user-role" id="userRoleTop">Quản lý</div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- HAMBURGER MENU (Mobile) -->
+    <div id="hamburgerMenu" class="hamburger-menu">
+        <button id="hamburgerBtn" class="hamburger-btn">
+            <span></span>
+            <span></span>
+            <span></span>
+        </button>
+        <div id="navLinks" class="nav-links">
+            <a href="dashboard.html">📊 Dashboard</a>
+            <a href="index.html">📋 Gọi Món & Tính Bill</a>
+            <a href="dishes.html">🍜 Quản Lý Món Ăn</a>
+            <a href="staff.html">👥 Quản Lý Nhân Viên</a>
+            <a href="ingredients.html">📦 Kho Nguyên Liệu</a>
+            <a href="revenue.html">💰 Báo Cáo Doanh Thu</a>
+            <a href="shifts_report.html">⏰ Quản Lý Ca Làm</a>
+            <a href="change_password.html">🔑 Đổi Mật Khẩu</a>
+            <a href="#" id="mobileLogout">🚪 Đăng Xuất</a>
+        </div>
+    </div>
+
+    <!-- MAIN CONTENT -->
+    <main class="main-content">
+        <div class="container">
+            <!-- TOOLBAR -->
+            <div class="flex-between mb-3">
+                <h1 style="margin: 0;">🍜 Quản Lý Món Ăn</h1>
+                <button class="btn btn-primary" id="addDishBtn">➕ Thêm Món Mới</button>
+            </div>
+
+            <!-- FILTERS -->
+            <div class="card mb-3">
+                <div class="form-inline">
+                    <div class="form-group">
+                        <label for="searchInput">🔍 Tìm kiếm:</label>
+                        <input type="text" id="searchInput" placeholder="Tên món ăn..." />
+                    </div>
+                    <div class="form-group">
+                        <label for="categoryFilter">Danh mục:</label>
+                        <select id="categoryFilter">
+                            <option value="">Tất cả</option>
+                            <option value="Món nướng">Món nướng</option>
+                            <option value="Món lẩu">Món lẩu</option>
+                            <option value="Món tráng miệng">Món tráng miệng</option>
+                            <option value="Buffet">Buffet</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="sortBy">Sắp xếp:</label>
+                        <select id="sortBy">
+                            <option value="name">Tên A-Z</option>
+                            <option value="price-asc">Giá thấp → cao</option>
+                            <option value="price-desc">Giá cao → thấp</option>
+                            <option value="category">Theo danh mục</option>
+                        </select>
+                    </div>
+                    <button class="btn btn-secondary" id="resetFilterBtn">🔄 Đặt lại</button>
+                </div>
+            </div>
+
+            <!-- STATISTICS -->
+            <div class="card-stats mb-3">
+                <div class="stat-card info">
+                    <div class="stat-value" id="totalDishes">0</div>
+                    <div class="stat-label">Tổng số món</div>
+                </div>
+                <div class="stat-card success">
+                    <div class="stat-value" id="activeDishes">0</div>
+                    <div class="stat-label">Đang bán</div>
+                </div>
+                <div class="stat-card warning">
+                    <div class="stat-value" id="avgPrice">0đ</div>
+                    <div class="stat-label">Giá trung bình</div>
+                </div>
+            </div>
+
+            <!-- DISHES GRID -->
+            <div id="dishesGrid" class="menu-grid">
+                <!-- Dishes rendered by JavaScript -->
+            </div>
+
+            <!-- EMPTY STATE -->
+            <div id="emptyState" class="empty-message" style="display: none;">
+                <p>Không tìm thấy món ăn nào</p>
+            </div>
+        </div>
+    </main>
+
+    <!-- MODAL: ADD/EDIT DISH -->
+    <div id="dishModal" class="modal-overlay">
+        <div class="modal-content" style="max-width: 600px;">
+            <div class="modal-header">
+                <h2 id="modalTitle">➕ Thêm Món Mới</h2>
+                <button class="modal-close" id="closeDishModalBtn">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="dishForm">
+                    <input type="hidden" id="dishId" />
+                    
+                    <div class="form-group">
+                        <label for="dishName">Tên món ăn: <span class="text-danger">*</span></label>
+                        <input type="text" id="dishName" required placeholder="Ví dụ: Bắp bò nướng" />
+                    </div>
+
+                    <div class="form-group">
+                        <label for="dishPrice">Giá bán (VND): <span class="text-danger">*</span></label>
+                        <input type="number" id="dishPrice" required min="0" step="1000" placeholder="80000" />
+                    </div>
+
+                    <div class="form-group">
+                        <label for="dishCategory">Danh mục: <span class="text-danger">*</span></label>
+                        <select id="dishCategory" required>
+                            <option value="">-- Chọn danh mục --</option>
+                            <option value="Món nướng">Món nướng</option>
+                            <option value="Món lẩu">Món lẩu</option>
+                            <option value="Món tráng miệng">Món tráng miệng</option>
+                            <option value="Buffet">Buffet</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="dishDescription">Mô tả món ăn:</label>
+                        <textarea id="dishDescription" rows="3" placeholder="Mô tả ngắn về món ăn..."></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="dishImage">Hình ảnh: <span class="text-danger">*</span></label>
+                        <input type="file" id="dishImage" accept="image/*" />
+                        <div id="imagePreview" style="margin-top: 1rem; display: none;">
+                            <img src="" alt="Preview" style="max-width: 200px; border-radius: 8px; border: 2px solid #ddd;" />
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" id="cancelDishBtn">Hủy</button>
+                <button class="btn btn-primary" id="saveDishBtn">💾 Lưu</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL: EDIT PRICE -->
+    <div id="priceModal" class="modal-overlay">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>💰 Chỉnh Sửa Giá</h2>
+                <button class="modal-close" id="closePriceModalBtn">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p><strong>Món:</strong> <span id="editPriceDishName"></span></p>
+                <p><strong>Giá hiện tại:</strong> <span id="editPriceOldPrice"></span></p>
+                <div class="form-group">
+                    <label for="newPriceInput">Giá mới (VND):</label>
+                    <input type="number" id="newPriceInput" min="0" step="1000" />
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" id="cancelPriceBtn">Hủy</button>
+                <button class="btn btn-primary" id="savePriceBtn">💾 Lưu</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- SCRIPTS -->
+    <script src="dishes-script.js"></script>
+    <script>
+        // Common UI Scripts
+        document.addEventListener('DOMContentLoaded', () => {
+            // Hamburger Menu Toggle
+            const hamburgerBtn = document.getElementById('hamburgerBtn');
+            const hamburgerMenu = document.getElementById('hamburgerMenu');
+
+            if (hamburgerBtn) {
+                hamburgerBtn.addEventListener('click', () => {
+                    hamburgerMenu.classList.toggle('open');
+                });
+            }
+
+            // Display user info
+            const staffName = sessionStorage.getItem('staffName') || 'Quản lý';
+            const role = sessionStorage.getItem('role') || 'Quản lý';
+            const userAvatar = staffName.charAt(0).toUpperCase();
+
+            document.getElementById('userNameTop').textContent = staffName;
+            document.getElementById('userRoleTop').textContent = role;
+            document.getElementById('userAvatarTop').textContent = userAvatar;
+
+            // Logout Handler
+            const logoutLink = document.getElementById('logoutLink');
+            const mobileLogout = document.getElementById('mobileLogout');
+
+            [logoutLink, mobileLogout].forEach(btn => {
+                if (btn) {
+                    btn.addEventListener('click', (e) => {
+                        e.preventDefault();
+                        if (confirm('Bạn có chắc chắn muốn đăng xuất?')) {
+                            sessionStorage.clear();
+                            window.location.href = 'login.html';
+                        }
+                    });
+                }
+            });
+
+            // Close mobile menu when clicking links
+            const navLinks = document.querySelectorAll('.nav-links a');
+            navLinks.forEach(link => {
+                link.addEventListener('click', () => {
+                    hamburgerMenu.classList.remove('open');
+                });
+            });
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,269 @@
+﻿<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Quán Buffet BBQ</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+</head>
+<body>
+    <!-- Kiểm tra đăng nhập -->
+    <script>
+        const isLoggedIn = sessionStorage.getItem('isLoggedIn');
+        if (isLoggedIn !== 'true') {
+            alert('Bạn cần đăng nhập để sử dụng hệ thống!');
+            window.location.href = 'login.html?redirect=dashboard';
+        }
+    </script>
+
+    <!-- SIDEBAR NAVIGATION -->
+    <aside class="sidebar">
+        <div class="sidebar-logo">
+            <img src="image/logo.png" alt="Quán Buffet BBQ Logo" />
+            <h3>Quán Buffet BBQ</h3>
+        </div>
+        <ul class="sidebar-menu">
+            <li class="sidebar-menu-item">
+                <a href="dashboard.html" class="sidebar-menu-link active">📊 Dashboard</a>
+            </li>
+            <li class="sidebar-menu-item">
+                <a href="index.html" class="sidebar-menu-link">📋 Gọi Món & Tính Bill</a>
+            </li>
+            <li class="sidebar-menu-item">
+                <a href="dishes.html" class="sidebar-menu-link">🍜 Quản Lý Món Ăn</a>
+            </li>
+            <li class="sidebar-menu-item">
+                <a href="tables.html" class="sidebar-menu-link">🪑 Quản Lý Bàn</a>
+            </li>
+            <li class="sidebar-menu-item">
+                <a href="orders.html" class="sidebar-menu-link">📦 Quản Lý Đơn Hàng</a>
+            </li>
+            <li class="sidebar-menu-item">
+                <a href="staff.html" class="sidebar-menu-link">👥 Quản Lý Nhân Viên</a>
+            </li>
+            <li class="sidebar-menu-item">
+                <a href="ingredients.html" class="sidebar-menu-link">📦 Kho Nguyên Liệu</a>
+            </li>
+            <li class="sidebar-menu-item">
+                <a href="revenue.html" class="sidebar-menu-link">💰 Báo Cáo Doanh Thu</a>
+            </li>
+            <li class="sidebar-menu-item">
+                <a href="shifts_report.html" class="sidebar-menu-link">⏰ Quản Lý Ca Làm</a>
+            </li>
+            <li class="sidebar-menu-item">
+                <a href="change_password.html" class="sidebar-menu-link">🔑 Đổi Mật Khẩu</a>
+            </li>
+            <li class="sidebar-menu-item">
+                <a href="#" id="logoutLink" class="sidebar-menu-link">🚪 Đăng Xuất</a>
+            </li>
+        </ul>
+        
+        <!-- Shift Info Section -->
+        <div class="shift-info-section" style="padding: 1.5rem; border-top: 1px solid rgba(255, 255, 255, 0.1); margin-top: 2rem; text-align: center; color: rgba(255, 255, 255, 0.8); font-size: 0.9rem;">
+            <p style="margin: 0.5rem 0;"><strong id="staffNameDisplay" style="color: var(--white);"></strong></p>
+            <p style="margin: 0.5rem 0;">Trạng thái: <span id="shiftStatusDisplay" style="font-weight: bold; color: var(--white);"></span></p>
+            <div class="shift-buttons" style="margin-top: 1rem; display: flex; gap: 0.5rem;">
+                <button id="checkInBtn" class="btn btn-success btn-small" style="flex: 1; display: none;">Check-in</button>
+                <button id="checkOutBtn" class="btn btn-danger btn-small" style="flex: 1; display: none;">Check-out</button>
+            </div>
+        </div>
+    </aside>
+
+    <!-- TOPBAR -->
+    <header class="topbar">
+        <div class="topbar-title">📊 Dashboard - Tổng Quan</div>
+        <div class="topbar-user">
+            <div class="user-profile">
+                <div class="user-avatar" id="userAvatarTop">A</div>
+                <div class="user-info">
+                    <div class="user-name" id="userNameTop">Nhân viên</div>
+                    <div class="user-role" id="userRoleTop">Phục vụ</div>
+                </div>
+            </div>
+            <button class="btn-icon" id="refreshBtn" title="Làm mới dữ liệu">🔄</button>
+        </div>
+    </header>
+
+    <!-- HAMBURGER MENU (Mobile) -->
+    <div id="hamburgerMenu" class="hamburger-menu">
+        <button id="hamburgerBtn" class="hamburger-btn">
+            <span></span>
+            <span></span>
+            <span></span>
+        </button>
+        <div id="navLinks" class="nav-links">
+            <a href="dashboard.html">📊 Dashboard</a>
+            <a href="index.html">📋 Gọi Món & Tính Bill</a>
+            <a href="dishes.html">🍜 Quản Lý Món Ăn</a>
+            <a href="tables.html">🪑 Quản Lý Bàn</a>
+            <a href="orders.html">📦 Quản Lý Đơn Hàng</a>
+            <a href="staff.html">👥 Quản Lý Nhân Viên</a>
+            <a href="ingredients.html">📦 Kho Nguyên Liệu</a>
+            <a href="revenue.html">💰 Báo Cáo Doanh Thu</a>
+            <a href="shifts_report.html">⏰ Quản Lý Ca Làm</a>
+            <a href="change_password.html">🔑 Đổi Mật Khẩu</a>
+            <a href="#" id="mobileLogout">🚪 Đăng Xuất</a>
+        </div>
+    </div>
+
+    <!-- MAIN CONTENT -->
+    <main class="main-content">
+        <!-- STAT CARDS -->
+        <div class="card-stats">
+            <div class="stat-card primary">
+                <div class="stat-value" id="todayRevenue">0 ₫</div>
+                <div class="stat-label">Doanh Thu Hôm Nay</div>
+            </div>
+            <div class="stat-card success">
+                <div class="stat-value" id="todayOrders">0</div>
+                <div class="stat-label">Đơn Hàng Hôm Nay</div>
+            </div>
+            <div class="stat-card info">
+                <div class="stat-value" id="availableDishes">0</div>
+                <div class="stat-label">Món Đang Bán</div>
+            </div>
+            <div class="stat-card warning">
+                <div class="stat-value" id="occupiedTables">0</div>
+                <div class="stat-label">Bàn Đang Sử Dụng</div>
+            </div>
+        </div>
+
+        <!-- CHARTS SECTION -->
+        <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 2rem; margin-top: 2rem;">
+            <!-- Revenue Chart -->
+            <div class="card">
+                <h2>📈 Doanh Thu 7 Ngày Gần Nhất</h2>
+                <canvas id="revenueChart" style="max-height: 350px;"></canvas>
+            </div>
+
+            <!-- Table Status -->
+            <div class="card">
+                <h2>🪑 Trạng Thái Bàn</h2>
+                <canvas id="tableChart" style="max-height: 350px;"></canvas>
+            </div>
+        </div>
+
+        <!-- RECENT ORDERS & TOP DISHES -->
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-top: 2rem;">
+            <!-- Recent Orders -->
+            <div class="card">
+                <div class="flex-between mb-2">
+                    <h2 style="margin: 0;">🆕 Đơn Hàng Mới Nhất</h2>
+                    <a href="orders.html" class="btn btn-small btn-primary">Xem Tất Cả</a>
+                </div>
+                <div style="max-height: 400px; overflow-y: auto;">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Bàn</th>
+                                <th>Tổng Tiền</th>
+                                <th>Trạng Thái</th>
+                                <th>Thời Gian</th>
+                            </tr>
+                        </thead>
+                        <tbody id="recentOrdersBody">
+                            <tr>
+                                <td colspan="4" class="text-center">Đang tải...</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Top Dishes -->
+            <div class="card">
+                <div class="flex-between mb-2">
+                    <h2 style="margin: 0;">🔥 Món Bán Chạy</h2>
+                    <a href="dishes.html" class="btn btn-small btn-primary">Xem Món Ăn</a>
+                </div>
+                <div style="max-height: 400px; overflow-y: auto;">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Món Ăn</th>
+                                <th>Số Lượng</th>
+                                <th>Doanh Thu</th>
+                            </tr>
+                        </thead>
+                        <tbody id="topDishesBody">
+                            <tr>
+                                <td colspan="3" class="text-center">Đang tải...</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- LOW STOCK ALERT -->
+        <div class="card mt-3" id="lowStockCard" style="display: none;">
+            <h2 class="text-danger">⚠️ Nguyên Liệu Sắp Hết</h2>
+            <div style="max-height: 300px; overflow-y: auto;">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Nguyên Liệu</th>
+                            <th>Tồn Kho</th>
+                            <th>Đơn Vị</th>
+                            <th>Trạng Thái</th>
+                        </tr>
+                    </thead>
+                    <tbody id="lowStockBody"></tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+
+    <!-- SCRIPTS -->
+    <script src="dashboard-script.js"></script>
+    <script>
+        // Common UI Scripts
+        document.addEventListener('DOMContentLoaded', () => {
+            // Hamburger Menu Toggle
+            const hamburgerBtn = document.getElementById('hamburgerBtn');
+            const hamburgerMenu = document.getElementById('hamburgerMenu');
+
+            if (hamburgerBtn) {
+                hamburgerBtn.addEventListener('click', () => {
+                    hamburgerMenu.classList.toggle('open');
+                });
+            }
+
+            // Display user info in topbar
+            const staffName = sessionStorage.getItem('staffName') || 'Nhân viên';
+            const role = sessionStorage.getItem('role') || 'Phục vụ';
+            const userAvatar = staffName.charAt(0).toUpperCase();
+
+            document.getElementById('userNameTop').textContent = staffName;
+            document.getElementById('userRoleTop').textContent = role;
+            document.getElementById('userAvatarTop').textContent = userAvatar;
+            document.getElementById('staffNameDisplay').textContent = staffName;
+
+            // Logout Handler
+            const logoutLink = document.getElementById('logoutLink');
+            const mobileLogout = document.getElementById('mobileLogout');
+
+            [logoutLink, mobileLogout].forEach(btn => {
+                if (btn) {
+                    btn.addEventListener('click', (e) => {
+                        e.preventDefault();
+                        if (confirm('Bạn có chắc chắn muốn đăng xuất?')) {
+                            sessionStorage.clear();
+                            window.location.href = 'login.html';
+                        }
+                    });
+                }
+            });
+
+            // Close mobile menu when clicking links
+            const navLinks = document.querySelectorAll('.nav-links a');
+            navLinks.forEach(link => {
+                link.addEventListener('click', () => {
+                    hamburgerMenu.classList.remove('open');
+                });
+            });
+        });
+    </script>
+</body>
+</html>
